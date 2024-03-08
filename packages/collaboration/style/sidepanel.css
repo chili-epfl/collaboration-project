@@ -126,3 +126,49 @@
   position: absolute;
   right: 0;
 }
+
+
+/************************************************************
+                Chat Box Panel
+*************************************************************/
+
+.jp-Chat-UserIcon {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+}
+
+.jp-Chat-UserIconText {
+  color: #fff;
+  background-color: var(--user-icon-color);
+}
+
+.jp-Chat-DisplayField {
+  margin-left: 3px;
+  margin-right: 3px; 
+  border: 1px solid #ccc;
+  min-height: 150px; 
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.jp-Chat-WritableFieldBox {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.jp-Chat-WritableField {
+  width: 80%;
+  padding: 8px;
+  resize: none;
+}
+
+.jp-Chat-Message {
+  word-wrap: break-word;
+  margin-bottom: 8px;
+}

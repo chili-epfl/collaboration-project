@@ -26,6 +26,7 @@ import { Menu, MenuBar } from '@lumino/widgets';
 import { IAwareness } from '@jupyter/ydoc';
 
 import {
+  Chatbox,
   CollaboratorsPanel,
   IGlobalAwareness,
   IUserMenu,
@@ -136,6 +137,9 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     awareness: Awareness,
     translator: ITranslator | null
   ): void => {
+
+    console.log("heyo wave check");
+
     const { user } = app.serviceManager;
 
     const trans = (translator ?? nullTranslator).load('jupyter_collaboration');
@@ -165,6 +169,11 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     );
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
+
+    const chatbox = new Chatbox(user);
+
+    chatbox.title.label = trans.__('Chat with collaborators');
+    userPanel.addWidget(chatbox);
   }
 };
 
