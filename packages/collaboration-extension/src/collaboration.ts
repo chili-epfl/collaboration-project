@@ -138,8 +138,6 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     translator: ITranslator | null
   ): void => {
 
-    console.log("heyo wave check");
-
     const { user } = app.serviceManager;
 
     const trans = (translator ?? nullTranslator).load('jupyter_collaboration');

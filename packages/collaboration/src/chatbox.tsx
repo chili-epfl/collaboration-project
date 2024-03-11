@@ -14,14 +14,14 @@ export class Chatbox extends ReactWidget {
     }
 
     render(): JSX.Element {
-        return <ChatBoxComponent user={this._currentUser} />;
+        return <ChatBoxComponent currentUser={this._currentUser} />;
     }
     
 }
 
 interface ChatBoxComponentProps {
 
-  user: User.IManager;
+  currentUser: User.IManager;
 
 }
 
@@ -35,9 +35,9 @@ interface ChatBoxComponentState {
 
 }
 
-const ChatBoxComponent: React.FC<ChatBoxComponentProps> = props => {
+const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser}) => {
 
-    const { user } = props;
+    const user = currentUser;
 
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});
 
@@ -55,6 +55,7 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = props => {
             },
           ],
         }));
+
       }
     };
 
@@ -116,13 +117,24 @@ interface ChatBoxMessageProps {
 
 const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user}) => {
 
+  const lineBreaksMessage = message.split('\n').map((line, index, array) => (
+    <React.Fragment key={index}>
+      {line}
+      {index < array.length - 1 && <br />}
+    </React.Fragment>
+  ));
+
   return (
     <div className='jp-Chat-Message'>
-       <div className="jp-Chat-UserIcon jp-Chat-UserIconText" style={{ backgroundColor: user.color }}>
-        {user.initials}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="jp-Chat-UserIcon jp-Chat-UserIconText" style={{ backgroundColor: user.color, marginRight: '5px' }}>
+          {user.initials}
+        </div>
+        <strong style={{ marginRight: '5px' }}>{user.name}</strong>
       </div>
-      <strong>{user.name}</strong>: {message}
+      <div style={{ marginLeft: '25px' }}>
+        {lineBreaksMessage}
+      </div>
     </div>
   );
-
 }
