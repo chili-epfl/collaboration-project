@@ -39,6 +39,8 @@ import {
 import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
 
+let awarenessProvider: WebSocketAwarenessProvider;
+
 /**
  * Jupyter plugin providing the IUserMenu.
  */
@@ -101,7 +103,7 @@ export const rtcGlobalAwarenessPlugin: JupyterFrontEndPlugin<IAwareness> = {
     const server = ServerConnection.makeSettings();
     const url = URLExt.join(server.wsUrl, 'api/collaboration/room');
 
-    new WebSocketAwarenessProvider({
+    awarenessProvider = new WebSocketAwarenessProvider({
       url: url,
       roomID: 'JupyterLab:globalAwareness',
       awareness: awareness,
@@ -168,7 +170,7 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
 
-    const chatbox = new Chatbox(user);
+    const chatbox = new Chatbox(user, awarenessProvider);
 
     chatbox.title.label = trans.__('Chat with collaborators');
     userPanel.addWidget(chatbox);

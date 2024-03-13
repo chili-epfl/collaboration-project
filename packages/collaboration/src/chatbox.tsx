@@ -3,18 +3,22 @@ import * as React from 'react';
 import { ReactWidget } from '@jupyterlab/apputils';
 import { User } from '@jupyterlab/services';
 
+import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
+
 export class Chatbox extends ReactWidget {
 
     private _currentUser: User.IManager;
+    private _awarenessProvider: WebSocketAwarenessProvider;
     
-    constructor(currentUser: User.IManager) {
+    constructor(currentUser: User.IManager, awarenessProvider: WebSocketAwarenessProvider) {
       super();
       this._currentUser = currentUser;
+      this._awarenessProvider = awarenessProvider;
       this.addClass('jp-ChatboxWidget');
     }
 
     render(): JSX.Element {
-        return <ChatBoxComponent currentUser={this._currentUser} />;
+        return <ChatBoxComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider}/>;
     }
     
 }
@@ -22,6 +26,7 @@ export class Chatbox extends ReactWidget {
 interface ChatBoxComponentProps {
 
   currentUser: User.IManager;
+  awarenessProvider: WebSocketAwarenessProvider;
 
 }
 
@@ -30,28 +35,46 @@ interface ChatBoxComponentState {
   message: string;
   messages: { 
     message: string; 
-    user: User.IIdentity
+    user: string
   }[];
 
 }
 
-const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser}) => {
+const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarenessProvider}) => {
 
     const user = currentUser;
+    const aProvider = awarenessProvider;
 
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});
+
+    aProvider.messageStream.connect((_, newMessage: IChatMessage) => {
+
+      setState((prevState) => ({
+        ...prevState,
+        messages: [
+          ...prevState.messages,
+          {
+            message: newMessage.content.body,
+            user: newMessage.sender
+          }
+        ]
+      }));
+
+    })
 
     const onSend = () => {
       const newMessage = state.message.trim();
       if (newMessage) {
-        // Update the messages list with the new message
+
+        aProvider.sendMessage(newMessage);
+
         setState((prevState) => ({
           message: '',
           messages: [
             ...prevState.messages,
             {
               message: newMessage,
-              user: user.identity!,
+              user: user.identity!.name,
             },
           ],
         }));
@@ -111,7 +134,7 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser}) => {
 interface ChatBoxMessageProps {
 
   message: string;
-  user: User.IIdentity;
+  user: string
 
 }
 
@@ -127,12 +150,10 @@ const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user}) => {
   return (
     <div className='jp-Chat-Message'>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div className="jp-Chat-UserIcon jp-Chat-UserIconText" style={{ backgroundColor: user.color, marginRight: '5px' }}>
-          {user.initials}
-        </div>
-        <strong style={{ marginRight: '5px' }}>{user.name}</strong>
+
+        <strong style={{ marginRight: '5px' }}>{user}</strong>
       </div>
-      <div style={{ marginLeft: '25px' }}>
+      <div>
         {lineBreaksMessage}
       </div>
     </div>
