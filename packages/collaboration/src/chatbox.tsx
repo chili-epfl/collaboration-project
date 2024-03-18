@@ -5,6 +5,8 @@ import { User } from '@jupyterlab/services';
 
 import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
 
+import * as msgEnc from './messageEncoding';
+
 export class Chatbox extends ReactWidget {
 
     private _currentUser: User.IManager;
@@ -49,16 +51,17 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
 
     React.useEffect(() => {
       const messageHandler = (_: any, newMessage: IChatMessage) => {
-          setState((prevState) => ({
-              ...prevState,
-              messages: [
-                  ...prevState.messages,
-                  {
-                      message: newMessage.content.body,
-                      user: newMessage.sender
-                  }
-              ]
-          }));
+        const decMessage = msgEnc.stringToMsg(newMessage.content.body);
+        setState((prevState) => ({
+          ...prevState,
+          messages: [
+            ...prevState.messages,
+            {
+              message: decMessage.content.body,
+              user: decMessage.sender
+            }
+          ]
+        }));
       };
 
       aProvider.messageStream.connect(messageHandler);
@@ -72,7 +75,14 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
     const onSend = () => {
       const newMessage = state.message.trim();
       if (newMessage) {
-        aProvider.sendMessage(newMessage);
+        aProvider.sendMessage(msgEnc.msgToString({
+          sender: user.identity!.name,
+          timestamp: Date.now(),
+          content: {
+            type: 'text',
+            body: newMessage
+          }
+        }));
 
         setState((prevState) => ({
           message: '',
