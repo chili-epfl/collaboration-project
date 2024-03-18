@@ -12,3 +12,4 @@ export * from './menu';
 export * from './sharedlink';
 export * from './userinfopanel';
 export * from './chatbox';
+export * from './messageEncoding';

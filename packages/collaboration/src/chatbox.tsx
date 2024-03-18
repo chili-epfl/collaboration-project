@@ -47,25 +47,31 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
 
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});
 
-    aProvider.messageStream.connect((_, newMessage: IChatMessage) => {
+    React.useEffect(() => {
+      const messageHandler = (_: any, newMessage: IChatMessage) => {
+          setState((prevState) => ({
+              ...prevState,
+              messages: [
+                  ...prevState.messages,
+                  {
+                      message: newMessage.content.body,
+                      user: newMessage.sender
+                  }
+              ]
+          }));
+      };
 
-      setState((prevState) => ({
-        ...prevState,
-        messages: [
-          ...prevState.messages,
-          {
-            message: newMessage.content.body,
-            user: newMessage.sender
-          }
-        ]
-      }));
+      aProvider.messageStream.connect(messageHandler);
 
-    })
+      return () => {
+          aProvider.messageStream.disconnect(messageHandler);
+      };
+  }, []);
+
 
     const onSend = () => {
       const newMessage = state.message.trim();
       if (newMessage) {
-
         aProvider.sendMessage(newMessage);
 
         setState((prevState) => ({

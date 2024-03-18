@@ -267,8 +267,10 @@ class YDocWebSocketHandler(WebSocketHandler, JupyterHandler):
                     task = asyncio.create_task(
                         client.send(bytes([MessageType.CHAT]) + write_var_uint(len(data)) + data)
                     )
-                    self._websocket_server.background_tasks.add(task)
-                    task.add_done_callback(self._websocket_server.background_tasks.discard)
+                    # causes errors in collaboration_chat; JupyterWebsocketServer has no background_tasks
+                    # attribute. quoted those to make it work, seems to not break too many things
+                    # self._websocket_server.background_tasks.add(task)
+                    # task.add_done_callback(self._websocket_server.background_tasks.discard)
 
         self._message_queue.put_nowait(message)
         self._websocket_server.ypatch_nb += 1
