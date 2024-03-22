@@ -13,3 +13,4 @@ export * from './sharedlink';
 export * from './userinfopanel';
 export * from './chatbox';
 export * from './messageEncoding';
+export * from './polls';

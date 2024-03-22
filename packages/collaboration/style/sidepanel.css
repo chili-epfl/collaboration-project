@@ -77,6 +77,8 @@
 *************************************************************/
 
 .jp-CollaboratorsPanel {
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
 }
 
@@ -132,6 +134,12 @@
                 Chat Box Panel
 *************************************************************/
 
+.jp-Chat-Panel {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
 .jp-Chat-UserIcon {
   border-radius: 50%;
   width: 20px;
@@ -171,4 +179,111 @@
 .jp-Chat-Message {
   word-wrap: break-word;
   margin-bottom: 8px;
+}
+
+/************************************************************
+                Poll Panel
+*************************************************************/
+
+.jp-Poll-Panel {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.jp-Poll-QuestionFieldBox {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.jp-Poll-QuestionField {
+  width: 80%;
+  padding: 8px;
+  resize: none;
+  height: 40px;
+}
+
+.jp-Poll-AnswerFieldBox {
+  margin-top: 8px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.jp-Poll-AnswerField {
+  width: 75%;
+  padding: 8px;
+  resize: none;
+  height: 16px;
+}
+
+.jp-Poll-DeleteButton {
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  color: #222;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.jp-Poll-AddAnswerButton {
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  color: #222;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.jp-Poll-SendButton {
+  margin-left: 10px;
+}
+
+.jp-Poll-PollDisplay {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.jp-Poll-SenderDisplay {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.jp-Poll-QuestionDisplay {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.jp-Poll-AnswerContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.jp-Poll-AnswerDisplay {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.jp-Poll-AnswerDisplay:hover {
+  background-color: #f0f0f0;
+  color: #222;
 }

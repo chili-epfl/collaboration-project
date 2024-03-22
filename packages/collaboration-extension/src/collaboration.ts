@@ -30,6 +30,7 @@ import {
   CollaboratorsPanel,
   IGlobalAwareness,
   IUserMenu,
+  PollList,
   remoteUserCursors,
   RendererUserMenu,
   UserInfoPanel,
@@ -174,6 +175,11 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
 
     chatbox.title.label = trans.__('Chat with collaborators');
     userPanel.addWidget(chatbox);
+
+    const pollTab = new PollList(user, awarenessProvider);
+
+    pollTab.title.label = trans.__('Polls');
+    userPanel.addWidget(pollTab);
   }
 };
 

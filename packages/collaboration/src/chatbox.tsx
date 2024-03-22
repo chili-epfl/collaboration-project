@@ -16,7 +16,7 @@ export class Chatbox extends ReactWidget {
       super();
       this._currentUser = currentUser;
       this._awarenessProvider = awarenessProvider;
-      this.addClass('jp-ChatboxWidget');
+      this.addClass('.jp-Chat-Panel')
     }
 
     render(): JSX.Element {
@@ -47,8 +47,10 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
     const user = currentUser;
     const aProvider = awarenessProvider;
 
+    // Getter and setter for the chat state
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});
 
+    // Listens for new messages and adds them to the chat
     React.useEffect(() => {
       const messageHandler = (_: any, newMessage: IChatMessage) => {
         const decMessage = msgEnc.stringToMsg(newMessage.content.body);
@@ -69,9 +71,9 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
       return () => {
           aProvider.messageStream.disconnect(messageHandler);
       };
-  }, []);
+    }, []);
 
-
+    // Sends new messages
     const onSend = () => {
       const newMessage = state.message.trim();
       if (newMessage) {
@@ -98,6 +100,7 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
       }
     };
 
+    // Sends messages by pressing 'enter'
     const keyPressHandler: React.KeyboardEventHandler<HTMLTextAreaElement> = e => {
 
       if (e.key === 'Enter' && !e.shiftKey) { 
@@ -109,40 +112,39 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
 
     const displayFiedRef = React.useRef<HTMLDivElement>(null);
 
+    // Scrolls down automatically to always display newer messages
     React.useEffect(() => {
-
       if (displayFiedRef.current) {
         displayFiedRef.current.scrollTop = displayFiedRef.current.scrollHeight;
       }
-
     }, [state.messages]);
 
     return (
-        <div>
-          {/* Display field */}
-          <div className='jp-Chat-DisplayField' ref={displayFiedRef}>
-            {state.messages.map((msg, index) => (
-              <ChatBoxMessage key={index} message={msg.message} user={msg.user} />
-            ))}
-          </div>
-    
-          {/* Writable field */}
-          <div className='jp-Chat-WritableFieldBox'>
-            <textarea
-              value={state.message}
-              onChange={(e) => setState({ ...state, message: e.target.value})}
-              placeholder="Type a message..."
-              onKeyDown={ keyPressHandler }
-              className='jp-Chat-WritableField'
-            />
-            
-            {/* Send button */}
-            <button onClick={onSend} style={{ padding: '8px' }}>
-              Send
-            </button>
-          </div>
+      <div>
+        {/* Message display field */}
+        <div className='jp-Chat-DisplayField' ref={displayFiedRef}>
+          {state.messages.map((msg, index) => (
+            <ChatBoxMessage key={index} message={msg.message} user={msg.user} currentUser={user}/>
+          ))}
         </div>
-      );
+    
+        {/* Message writing field */}
+        <div className='jp-Chat-WritableFieldBox'>
+          <textarea
+            value={state.message}
+            onChange={(e) => setState({ ...state, message: e.target.value})}
+            placeholder='Type a message...'
+            onKeyDown={ keyPressHandler }
+            className='jp-Chat-WritableField'
+          />
+            
+          {/* Send button */}
+          <button onClick={onSend} style={{ padding: '8px' }}>
+            Send
+          </button>
+        </div>
+      </div>
+    );
 
 }
 
@@ -150,12 +152,14 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
 interface ChatBoxMessageProps {
 
   message: string;
-  user: string
+  user: string;
+  currentUser: User.IManager
 
 }
 
-const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user}) => {
+const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user, currentUser}) => {
 
+  // Adds line breaks back to the message
   const lineBreaksMessage = message.split('\n').map((line, index, array) => (
     <React.Fragment key={index}>
       {line}
@@ -167,7 +171,7 @@ const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user}) => {
     <div className='jp-Chat-Message'>
       <div style={{ display: 'flex', alignItems: 'center' }}>
 
-        <strong style={{ marginRight: '5px' }}>{user}</strong>
+        <strong style={{ marginRight: '5px', textDecoration: ((user === currentUser.identity!.name) ? 'underline' : 'none')}}>{user}</strong>
       </div>
       <div>
         {lineBreaksMessage}
