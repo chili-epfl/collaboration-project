@@ -279,11 +279,18 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 5px;
-  cursor: pointer;
   margin-bottom: 5px;
 }
 
 .jp-Poll-AnswerDisplay:hover {
   background-color: #f0f0f0;
   color: #222;
+  cursor: pointer;
+}
+
+.jp-Poll-AnswerDisplay-Voted {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
 }

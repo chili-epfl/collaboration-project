@@ -1,5 +1,5 @@
 import { IChatMessage } from '@jupyter/docprovider';
-import { Poll } from './polls';
+import { Poll, PollUpdate } from './polls';
 
 export function msgToString(msg: IChatMessage): string {
 
@@ -8,17 +8,6 @@ export function msgToString(msg: IChatMessage): string {
     if (faultyChar) throw new Error(`Message can't contain character ♠`);
 
     return `icm♠${msg.sender}♠${msg.timestamp}♠${msg.content.body}`;
-
-}
-
-export function pollToString(pll: Poll): string {
-
-    const faultyChar = pll.question.includes('♠') || pll.answers.some(_ => _.includes('♠')) ||
-                       pll.answers.some(_ => _.includes('♣'));
-
-    if (faultyChar) throw new Error(`No field can contain character ♠ or ♣`);
-
-    return `pll♠${pll.sender}♠${pll.question}♠${pll.n_answers}♠${pll.answers.join('♣')}♠${pll.total_answers}♠${pll.results.join('♣')}`;
 
 }
 
@@ -44,6 +33,17 @@ export function stringToMsg(s: string): IChatMessage {
 
 }
 
+export function pollToString(pll: Poll): string {
+
+    const faultyChar = pll.question.includes('♠') || pll.answers.some(_ => _.includes('♠')) ||
+                       pll.answers.some(_ => _.includes('♣'));
+
+    if (faultyChar) throw new Error(`No field can contain character ♠ or ♣`);
+
+    return `pll♠${pll.sender}♠${pll.question}♠${pll.n_answers}♠${pll.answers.join('♣')}♠${pll.total_answers}♠${pll.results.join('♣')}`;
+
+}
+
 export function stringToPoll(s: string): Poll {
 
     const parts = s.split('♠');
@@ -62,6 +62,32 @@ export function stringToPoll(s: string): Poll {
         question: question,
         n_answers: n_answers,
         answers: answers,
+        total_answers: total_answers,
+        results: results
+    }
+
+}
+
+export function pollUpdateToString(upd: PollUpdate): string {
+
+    return `upd♠${upd.index}♠${upd.total_answers}♠${upd.results.join('♣')}`;
+
+}
+
+export function stringToPollUpdate(s: string): PollUpdate {
+
+    const parts = s.split('♠');
+
+    if (parts.length !== 4) throw new Error('Invalid input format');
+
+    const [_, indexStr, total_answersStr, resultsStr] = parts;
+
+    const index = parseInt(indexStr, 10);
+    const total_answers = parseInt(total_answersStr, 10);
+    const results = resultsStr.split('♣').map(_ => parseInt(_, 10));
+
+    return {
+        index: index,
         total_answers: total_answers,
         results: results
     }

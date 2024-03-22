@@ -16,6 +16,12 @@ export interface Poll {
     results: number[]
 }
 
+export interface PollUpdate {
+    index: number,
+    total_answers: number,
+    results: number[]
+}
+
 export class PollList extends ReactWidget {
 
     private _currentUser: User.IManager;
@@ -86,8 +92,6 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
     // Sends new polls
     const onSend = () => {
 
-        console.log('neg');
-
         const newQuestion = state.question.trim();
         const newAnswers = state.answers.map(_ => _.trim()).filter(ans => ans !== '');
 
@@ -112,14 +116,39 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
         }
     }
 
-    // Listens for new polls and adds them to the list (TODO)
+    // Handles voting in a poll
+    const vote = (pollIndex: number, answerIndex: number) => {
+        const updatedPolls = [...state.polls];
+        updatedPolls[pollIndex].results[answerIndex]++;
+        updatedPolls[pollIndex].total_answers++;
+
+        setState((prevState) => ({ 
+            ...prevState, 
+            polls: updatedPolls 
+        }));
+
+        aProvider.sendMessage(msgEnc.pollUpdateToString({
+            index: pollIndex,
+            total_answers: updatedPolls[pollIndex].total_answers,
+            results: updatedPolls[pollIndex].results
+        }))
+    };
+
+    // Listens for new polls (or updates) and adds them to the list
     React.useEffect(() => {
         const pollHandler = (_: any, newMessage: IChatMessage) => {
-            const newPoll = msgEnc.stringToPoll(newMessage.content.body);
-            setState((prevState) => ({
-                ...prevState,
-                polls: [...prevState.polls, newPoll]
-            }));
+            const parts = newMessage.content.body.split('♠');
+
+            if (parts[0] === 'pll') {
+                const newPoll = msgEnc.stringToPoll(newMessage.content.body);
+                setState((prevState) => ({
+                    ...prevState,
+                    polls: [...prevState.polls, newPoll]
+                }));
+
+            } else if (parts[0] === 'upd') {
+                // TODO: receive update right
+            }
         };
 
         aProvider.messageStream.connect(pollHandler);
@@ -129,14 +158,12 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
         }
     }, []);
 
-    // Listens for changes in poll results and updates them (TODO)
-
     return (
         <div>
             {/* Poll display field */}
             <div className='jp-Chat-DisplayField' ref={displayFiedRef}>
                 {state.polls.map((poll, index) => (
-                    <PollDisplay key={index} poll={poll} currentUser={user}/>
+                    <PollDisplay key={index} poll={poll} currentUser={user} vote={(answerIndex) => vote(index, answerIndex)}/>
                 ))}
             </div>
 
@@ -196,16 +223,31 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
 interface PollDisplayProps {
     poll: Poll;
     currentUser: User.IManager;
+    vote: (answerIndex: number) => void;
 }
 
-const PollDisplay: React.FC<PollDisplayProps> = ({poll, currentUser}) => {
+const PollDisplay: React.FC<PollDisplayProps> = ({poll, currentUser, vote}) => {
+
+    // Getter and setter for the "voted" property of the poll
+    const [voted, setVoted] = React.useState<boolean>(false);
+
+    // Handles voting for a specific answer
+    const handleVote = (index: number) => {
+        if (!voted) {
+            vote(index);
+            setVoted(true);
+        }
+    }
+
     return (
         <div className='jp-Poll-PollDisplay'>
             <div className={`jp-Poll-SenderDisplay ${poll.sender === currentUser.identity!.name ? 'underline' : ''}`}>{poll.sender}</div>
             <div className='jp-Poll-QuestionDisplay'>{poll.question}</div>
             <div className="jp-Poll-AnswerContainer">
                 {poll.answers.map((answer, index) => (
-                    <div key={index} className='jp-Poll-AnswerDisplay'>{answer}</div>
+                    <div key={index} className={`${voted ? 'jp-Poll-AnswerDisplay-Voted' : 'jp-Poll-AnswerDisplay'}`} onClick={() => handleVote(index)}>
+                        {answer} {voted && `(${((poll.results[index] / poll.total_answers) * 100).toFixed(2)}%)`}
+                    </div>
                 ))}
             </div>
             <style>

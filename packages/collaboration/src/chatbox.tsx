@@ -53,17 +53,20 @@ const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarene
     // Listens for new messages and adds them to the chat
     React.useEffect(() => {
       const messageHandler = (_: any, newMessage: IChatMessage) => {
-        const decMessage = msgEnc.stringToMsg(newMessage.content.body);
-        setState((prevState) => ({
-          ...prevState,
-          messages: [
-            ...prevState.messages,
-            {
-              message: decMessage.content.body,
-              user: decMessage.sender
-            }
-          ]
-        }));
+        const parts = newMessage.content.body.split('♠');
+        if (parts[0] === 'icm') {
+          const decMessage = msgEnc.stringToMsg(newMessage.content.body);
+          setState((prevState) => ({
+            ...prevState,
+            messages: [
+              ...prevState.messages,
+              {
+                message: decMessage.content.body,
+                user: decMessage.sender
+              }
+            ]
+          }));
+        }
       };
 
       aProvider.messageStream.connect(messageHandler);
