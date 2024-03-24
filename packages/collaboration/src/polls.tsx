@@ -7,6 +7,9 @@ import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
 
 import * as msgEnc from './messageEncoding';
 
+const MIN_N_ANSWERS = 2;
+const MAX_N_ANSWERS = 4;
+
 export interface Poll {
     sender: string,
     question: string,
@@ -21,6 +24,8 @@ export interface PollUpdate {
     total_answers: number,
     results: number[]
 }
+
+
 
 export class PollList extends ReactWidget {
 
@@ -73,7 +78,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
 
     // Adds an answer option
     const addAnswer = () => {
-        if (state.answers.length < 4) {
+        if (state.answers.length < MAX_N_ANSWERS) {
             setState(prevState => ({
                 ...prevState,
                 answers: [...prevState.answers, '']
@@ -95,7 +100,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
         const newQuestion = state.question.trim();
         const newAnswers = state.answers.map(_ => _.trim()).filter(ans => ans !== '');
 
-        if (newQuestion && newAnswers.length >= 2) {
+        if (newQuestion && newAnswers.length >= MIN_N_ANSWERS) {
 
             const newPoll: Poll = {
                 sender: user.identity!.name,
@@ -128,7 +133,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
         }));
 
         aProvider.sendMessage(msgEnc.pollUpdateToString({
-            index: pollIndex,
+            index: (state.polls.length - 1) - pollIndex,
             total_answers: updatedPolls[pollIndex].total_answers,
             results: updatedPolls[pollIndex].results
         }))
@@ -147,7 +152,19 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
                 }));
 
             } else if (parts[0] === 'upd') {
-                // TODO: receive update right
+                const update = msgEnc.stringToPollUpdate(newMessage.content.body);
+                setState((prevState) => {
+                    const updatedPolls = [...prevState.polls];
+                    const index = (prevState.polls.length - 1) - update.index;
+                    if (index >= 0) {
+                        updatedPolls[index].total_answers = update.total_answers;
+                        updatedPolls[index].results = update.results;
+                    }
+                    return {
+                        ...prevState,
+                        polls: updatedPolls
+                    };
+                });
             }
         };
 
@@ -190,7 +207,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
                         placeholder={`Answer ${index + 1}`}
                         className='jp-Poll-AnswerField'
                     />
-                    {state.answers.length > 2 && (
+                    {state.answers.length > MIN_N_ANSWERS && (
                         <button onClick={() => deleteAnswer(index)} className='jp-Poll-DeleteButton'>
                             X
                         </button>
@@ -200,7 +217,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
 
             {/* Add answer button */}
             <div>
-                {state.answers.length < 4 && (
+                {state.answers.length < MAX_N_ANSWERS && (
                     <button onClick={addAnswer} className='jp-Poll-AddAnswerButton'>
                         +
                     </button>
