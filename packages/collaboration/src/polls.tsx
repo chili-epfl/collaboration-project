@@ -36,7 +36,7 @@ export class PollList extends ReactWidget {
         super();
         this._currentUser = currentUser;
         this._awarenessProvider = awarenessProvider;
-        this.addClass('.jp-Poll-Panel');
+        this.addClass('jp-Poll-Panel');
     }
 
     render(): JSX.Element {

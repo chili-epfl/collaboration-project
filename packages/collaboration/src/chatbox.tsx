@@ -16,7 +16,7 @@ export class Chatbox extends ReactWidget {
       super();
       this._currentUser = currentUser;
       this._awarenessProvider = awarenessProvider;
-      this.addClass('.jp-Chat-Panel')
+      this.addClass('jp-Chat-Panel')
     }
 
     render(): JSX.Element {
