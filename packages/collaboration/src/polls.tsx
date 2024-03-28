@@ -243,8 +243,7 @@ interface PollDisplayProps {
     vote: (answerIndex: number) => void;
 }
 
-const PollDisplay: React.FC<PollDisplayProps> = ({poll, currentUser, vote}) => {
-
+const PollDisplay: React.FC<PollDisplayProps> = ({ poll, currentUser, vote }) => {
     // Getter and setter for the "voted" property of the poll
     const [voted, setVoted] = React.useState<boolean>(false);
 
@@ -254,22 +253,29 @@ const PollDisplay: React.FC<PollDisplayProps> = ({poll, currentUser, vote}) => {
             vote(index);
             setVoted(true);
         }
-    }
+    };
 
     return (
-        <div className='jp-Poll-PollDisplay'>
-            <div className={`jp-Poll-SenderDisplay ${poll.sender === currentUser.identity!.name ? 'underline' : ''}`}>{poll.sender}</div>
-            <div className='jp-Poll-QuestionDisplay'>{poll.question}</div>
+        <div className="jp-Poll-PollDisplay">
+            <div className={`jp-Poll-SenderDisplay ${poll.sender === currentUser.identity!.name ? 'underline' : ''}`}>
+                {poll.sender}
+            </div>
+            <div className="jp-Poll-QuestionDisplay">{poll.question}</div>
             <div className="jp-Poll-AnswerContainer">
                 {poll.answers.map((answer, index) => (
-                    <div key={index} className={`${voted ? 'jp-Poll-AnswerDisplay-Voted' : 'jp-Poll-AnswerDisplay'}`} onClick={() => handleVote(index)}>
-                        {answer} {voted && `(${((poll.results[index] / poll.total_answers) * 100).toFixed(2)}%)`}
+                    <div key={index} className={`jp-Poll-AnswerDisplay ${voted ? 'jp-Poll-AnswerDisplay-Voted' : ''}`} onClick={() => handleVote(index)}>
+                        <div className="jp-Poll-AnswerText">{answer}</div>
+                        {voted && (
+                            <div className="jp-Poll-ProgressBar">
+                                <div className="jp-Poll-Progress" style={{ width: `${(poll.results[index] / poll.total_answers) * 100}%` }}></div>
+                            </div>
+                        )}
+                        {voted && (
+                            <div className="jp-Poll-Percentage">{((poll.results[index] / poll.total_answers) * 100).toFixed(2)}%</div>
+                        )}
                     </div>
                 ))}
             </div>
-            <style>
-                {`.underline { text-decoration: underline; }`}
-            </style>
         </div>
     );
 }

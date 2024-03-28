@@ -294,3 +294,22 @@
   padding: 5px;
   margin-bottom: 5px;
 }
+
+.jp-Poll-ProgressBar {
+  background-color: #ddd;
+  height: 10px;
+  margin-top: 5px;
+}
+
+.jp-Poll-Progress { 
+  background-color: #177013;
+  height: 100%;
+}
+
+.jp-Poll-Percentage { 
+  margin-top: 5px;
+}
+
+.underline {
+  text-decoration: underline;
+}
