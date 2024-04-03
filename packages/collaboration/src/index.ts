@@ -14,3 +14,4 @@ export * from './userinfopanel';
 export * from './chatbox';
 export * from './messageEncoding';
 export * from './polls';
+export * from './roles';

@@ -15,7 +15,7 @@ import {
   IEditorExtensionRegistry
 } from '@jupyterlab/codemirror';
 import { WebSocketAwarenessProvider } from '@jupyter/docprovider';
-import { SidePanel, usersIcon } from '@jupyterlab/ui-components';
+import { SidePanel, usersIcon, wordIcon } from '@jupyterlab/ui-components';
 import { URLExt } from '@jupyterlab/coreutils';
 import { ServerConnection } from '@jupyterlab/services';
 import { IStateDB, StateDB } from '@jupyterlab/statedb';
@@ -32,6 +32,7 @@ import {
   IUserMenu,
   PollList,
   remoteUserCursors,
+  Roles,
   RendererUserMenu,
   UserInfoPanel,
   UserMenu
@@ -154,6 +155,8 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     userPanel.addClass('jp-RTCPanel');
     app.shell.add(userPanel, 'left', { rank: 300 });
 
+    new Roles(user, awareness, awarenessProvider);
+
     const currentUserPanel = new UserInfoPanel(user);
     currentUserPanel.title.label = trans.__('User info');
     currentUserPanel.title.caption = trans.__('User information');
@@ -171,15 +174,24 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
 
+    const chatPanel = new SidePanel({
+      alignment: 'justify'
+    });
+    chatPanel.id = 'jp-chat-panel';
+    chatPanel.title.icon = wordIcon;
+    chatPanel.title.caption = trans.__('Chat');
+    chatPanel.addClass('jp-RTCPanel');
+    app.shell.add(chatPanel, 'left', { rank: 301 });
+
     const chatbox = new Chatbox(user, awarenessProvider);
 
     chatbox.title.label = trans.__('Chat with collaborators');
-    userPanel.addWidget(chatbox);
+    chatPanel.addWidget(chatbox);
 
     const pollTab = new PollList(user, awarenessProvider);
 
     pollTab.title.label = trans.__('Polls');
-    userPanel.addWidget(pollTab);
+    chatPanel.addWidget(pollTab);
   }
 };
 
