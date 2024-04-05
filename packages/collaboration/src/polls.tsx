@@ -6,6 +6,7 @@ import { User } from '@jupyterlab/services';
 import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
 
 import * as msgEnc from './messageEncoding';
+import { Roles } from './roles';
 
 const MIN_N_ANSWERS = 2;
 const MAX_N_ANSWERS = 4;
@@ -31,11 +32,15 @@ export class PollList extends ReactWidget {
 
     private _currentUser: User.IManager;
     private _awarenessProvider: WebSocketAwarenessProvider;
+    private _roles: Roles;
 
-    constructor(currentUser: User.IManager, awarenessProvider: WebSocketAwarenessProvider) {
+    constructor(currentUser: User.IManager, awarenessProvider: WebSocketAwarenessProvider, roles: Roles) {
         super();
+        
         this._currentUser = currentUser;
         this._awarenessProvider = awarenessProvider;
+        this._roles = roles;
+
         this.addClass('jp-Poll-Panel');
     }
 

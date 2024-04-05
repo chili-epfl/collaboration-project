@@ -155,9 +155,9 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     userPanel.addClass('jp-RTCPanel');
     app.shell.add(userPanel, 'left', { rank: 300 });
 
-    new Roles(user, awareness, awarenessProvider);
+    const roles = new Roles(user, awareness, awarenessProvider);
 
-    const currentUserPanel = new UserInfoPanel(user);
+    const currentUserPanel = new UserInfoPanel(user, roles);
     currentUserPanel.title.label = trans.__('User info');
     currentUserPanel.title.caption = trans.__('User information');
     userPanel.addWidget(currentUserPanel);
@@ -169,10 +169,12 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     const collaboratorsPanel = new CollaboratorsPanel(
       user,
       awareness,
-      fileopener
+      fileopener,
+      roles
     );
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
+
 
     const chatPanel = new SidePanel({
       alignment: 'justify'
@@ -183,12 +185,12 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     chatPanel.addClass('jp-RTCPanel');
     app.shell.add(chatPanel, 'left', { rank: 301 });
 
-    const chatbox = new Chatbox(user, awarenessProvider);
+    const chatbox = new Chatbox(user, awarenessProvider, roles);
 
     chatbox.title.label = trans.__('Chat with collaborators');
     chatPanel.addWidget(chatbox);
 
-    const pollTab = new PollList(user, awarenessProvider);
+    const pollTab = new PollList(user, awarenessProvider, roles);
 
     pollTab.title.label = trans.__('Polls');
     chatPanel.addWidget(pollTab);

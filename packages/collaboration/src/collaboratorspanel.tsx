@@ -14,6 +14,7 @@ import { User } from '@jupyterlab/services';
 import { PathExt } from '@jupyterlab/coreutils';
 
 import { ICollaboratorAwareness } from './tokens';
+import { Roles } from './roles';
 
 /**
  * The CSS class added to collaborators panel.
@@ -44,17 +45,21 @@ export class CollaboratorsPanel extends Panel {
   private _currentUser: User.IManager;
   private _awareness: Awareness;
   private _body: CollaboratorsBody;
+  private _roles: Roles;
 
   constructor(
     currentUser: User.IManager,
     awareness: Awareness,
-    fileopener: (path: string) => void
+    fileopener: (path: string) => void,
+    roles: Roles
   ) {
     super({});
 
     this._awareness = awareness;
 
     this._currentUser = currentUser;
+
+    this._roles = roles;
 
     this.addClass(COLLABORATORS_PANEL_CLASS);
 

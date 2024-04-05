@@ -10,17 +10,20 @@ import { Panel } from '@lumino/widgets';
 import * as React from 'react';
 
 import { UserIconComponent } from './components';
+import { Roles } from './roles';
 
 export class UserInfoPanel extends Panel {
   private _profile: User.IManager;
   private _body: UserInfoBody | null;
+  private _roles: Roles;
 
-  constructor(user: User.IManager) {
+  constructor(user: User.IManager, roles: Roles) {
     super({});
     this.addClass('jp-UserInfoPanel');
 
     this._profile = user;
     this._body = null;
+    this._roles = roles;
 
     if (this._profile.isReady) {
       this._body = new UserInfoBody(this._profile.identity!);
