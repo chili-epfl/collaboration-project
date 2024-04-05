@@ -1,5 +1,6 @@
 import { IChatMessage } from '@jupyter/docprovider';
 import { Poll, PollUpdate } from './polls';
+import { RoleUpdate } from './roles';
 
 export function msgToString(msg: IChatMessage): string {
 
@@ -90,6 +91,33 @@ export function stringToPollUpdate(s: string): PollUpdate {
         index: index,
         total_answers: total_answers,
         results: results
+    }
+
+}
+
+export function roleUpdateToString(rup: RoleUpdate): string {
+
+    const faultyChar = rup.user.includes('♠') || rup.role.toString().includes('♠');
+
+    if (faultyChar) throw new Error(`No field can contain character ♠ or ♣`);
+
+    return `rup♠${rup.user}♠${rup.role.toString()}`;
+
+}
+
+export function stringToRoleUpdate(s: string): RoleUpdate {
+
+    const parts = s.split('♠');
+
+    if (parts.length !== 3) throw new Error('Invalid input format');
+
+    const [_, user, roleStr] = parts;
+
+    const role = parseInt(roleStr, 10);
+
+    return {
+        user: user,
+        role: role
     }
 
 }
