@@ -45,7 +45,6 @@ export class CollaboratorsPanel extends Panel {
   private _currentUser: User.IManager;
   private _awareness: Awareness;
   private _body: CollaboratorsBody;
-  private _roles: Roles;
 
   constructor(
     currentUser: User.IManager,
@@ -59,11 +58,9 @@ export class CollaboratorsPanel extends Panel {
 
     this._currentUser = currentUser;
 
-    this._roles = roles;
-
     this.addClass(COLLABORATORS_PANEL_CLASS);
 
-    this._body = new CollaboratorsBody(fileopener);
+    this._body = new CollaboratorsBody(fileopener, roles);
     this.addWidget(this._body);
     this.update();
 
@@ -96,10 +93,12 @@ export class CollaboratorsPanel extends Panel {
 export class CollaboratorsBody extends ReactWidget {
   private _collaborators: ICollaboratorAwareness[] = [];
   private _fileopener: (path: string) => void;
+//  private _roles: Roles;
 
-  constructor(fileopener: (path: string) => void) {
+  constructor(fileopener: (path: string) => void, roles: Roles) {
     super();
     this._fileopener = fileopener;
+//    this._roles = roles;
     this.addClass(COLLABORATORS_LIST_CLASS);
   }
 

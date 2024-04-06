@@ -6,7 +6,7 @@ import { User } from '@jupyterlab/services';
 import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
 
 import * as msgEnc from './messageEncoding';
-import { Roles } from './roles';
+import { Roles, Role } from './roles';
 
 const MIN_N_ANSWERS = 2;
 const MAX_N_ANSWERS = 4;
@@ -45,14 +45,15 @@ export class PollList extends ReactWidget {
     }
 
     render(): JSX.Element {
-        return <PollListComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider}/>;
+        return <PollListComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider} userRoles={this._roles}/>;
     }
 
 }
 
 interface PollListComponentProps {
     currentUser: User.IManager,
-    awarenessProvider: WebSocketAwarenessProvider
+    awarenessProvider: WebSocketAwarenessProvider,
+    userRoles: Roles
 }
 
 interface PollListState {
@@ -61,10 +62,11 @@ interface PollListState {
     polls: Poll[]
 }
 
-const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, awarenessProvider}) => {
+const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, awarenessProvider, userRoles}) => {
 
     const user = currentUser;
     const aProvider = awarenessProvider;
+    const roles = userRoles;
 
     // Getter and setter for the poll state
     const [state, setState] = React.useState<PollListState>({question: '', answers: ['', ''], polls: []});
@@ -79,7 +81,6 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
       }
 
     }, [state.polls]);
-
 
     // Adds an answer option
     const addAnswer = () => {
@@ -189,52 +190,57 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
                 ))}
             </div>
 
-            {/* Poll question field */}
-            <div className='jp-Poll-QuestionFieldBox'>
-                <textarea
-                    value = {state.question}
-                    onChange={(e) => setState({question: e.target.value, answers: state.answers, polls: state.polls})}
-                    placeholder='Your question here...'
-                    className='jp-Poll-QuestionField'
-                />
-            </div>
+            {/* Allow poll creation only if user isn't a student */}
+            {roles.get(user.identity!) !== Role.Student && (
+                <div>
+                    {/* Poll question field */}
+                    <div className='jp-Poll-QuestionFieldBox'>
+                        <textarea
+                            value={state.question}
+                            onChange={(e) => setState({ ...state, question: e.target.value })}
+                            placeholder='Your question here...'
+                            className='jp-Poll-QuestionField'
+                        />
+                    </div>
 
-            {/* Poll answer fields */}
-            {state.answers.map((answer, index) => (
-                <div key={index} className='jp-Poll-AnswerFieldBox'>
-                    <textarea
-                        value={answer}
-                        onChange={(e) => {
-                            const newAnswers = [...state.answers];
-                            newAnswers[index] = e.target.value;
-                            setState({ ...state, answers: newAnswers });
-                        }}
-                        placeholder={`Answer ${index + 1}`}
-                        className='jp-Poll-AnswerField'
-                    />
-                    {state.answers.length > MIN_N_ANSWERS && (
-                        <button onClick={() => deleteAnswer(index)} className='jp-Poll-DeleteButton'>
-                            X
-                        </button>
-                    )}
+                    {/* Poll answer fields */}
+                    {state.answers.map((answer, index) => (
+                        <div key={index} className='jp-Poll-AnswerFieldBox'>
+                            <textarea
+                                value={answer}
+                                onChange={(e) => {
+                                    const newAnswers = [...state.answers];
+                                    newAnswers[index] = e.target.value;
+                                    setState({ ...state, answers: newAnswers });
+                                }}
+                                placeholder={`Answer ${index + 1}`}
+                                className='jp-Poll-AnswerField'
+                            />
+                            {state.answers.length > MIN_N_ANSWERS && (
+                                <button onClick={() => deleteAnswer(index)} className='jp-Poll-DeleteButton'>
+                                    X
+                                </button>
+                            )}
+                        </div>
+                    ))}
+
+                    {/* Add answer button */}
+                    <div>
+                        {state.answers.length < MAX_N_ANSWERS && (
+                            <button onClick={addAnswer} className='jp-Poll-AddAnswerButton'>
+                                +
+                            </button>
+                        )}
+                    </div>
+        
+                    {/* Send button */}
+                    <div>
+                        <button onClick={onSend} className='jp-Poll-SendButton'>
+                            Send
+                        </button>                
+                    </div>
                 </div>
-            ))}
-
-            {/* Add answer button */}
-            <div>
-                {state.answers.length < MAX_N_ANSWERS && (
-                    <button onClick={addAnswer} className='jp-Poll-AddAnswerButton'>
-                        +
-                    </button>
-                )}
-            </div>
-  
-            {/* Send button */}
-            <div>
-                <button onClick={onSend} className='jp-Poll-SendButton'>
-                    Send
-                </button>                
-            </div>
+            )}
         </div>
 
 

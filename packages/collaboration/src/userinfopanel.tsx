@@ -15,7 +15,6 @@ import { Roles } from './roles';
 export class UserInfoPanel extends Panel {
   private _profile: User.IManager;
   private _body: UserInfoBody | null;
-  private _roles: Roles;
 
   constructor(user: User.IManager, roles: Roles) {
     super({});
@@ -23,16 +22,15 @@ export class UserInfoPanel extends Panel {
 
     this._profile = user;
     this._body = null;
-    this._roles = roles;
 
     if (this._profile.isReady) {
-      this._body = new UserInfoBody(this._profile.identity!);
+      this._body = new UserInfoBody(this._profile.identity!, roles);
       this.addWidget(this._body);
       this.update();
     } else {
       this._profile.ready
         .then(() => {
-          this._body = new UserInfoBody(this._profile.identity!);
+          this._body = new UserInfoBody(this._profile.identity!, roles);
           this.addWidget(this._body);
           this.update();
         })
@@ -46,13 +44,15 @@ export class UserInfoPanel extends Panel {
  */
 export class UserInfoBody extends ReactWidget {
   private _user: User.IIdentity;
+//  private _roles: Roles;
 
   /**
    * Constructs a new settings widget.
    */
-  constructor(user: User.IIdentity) {
+  constructor(user: User.IIdentity, roles: Roles) {
     super();
     this._user = user;
+//    this._roles = roles;
   }
 
   get user(): User.IIdentity {

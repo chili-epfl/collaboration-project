@@ -31,6 +31,9 @@ export class Roles {
 
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
 
+        // Test stuff before actual role assignments; REMOVE
+        this._map.set(currentUser.identity!, Math.floor(Math.random()*3));
+
         // TODO: are you the owner of the files? If yes, add a map pair with your name and Owner; else you're a Student for now
     }
 

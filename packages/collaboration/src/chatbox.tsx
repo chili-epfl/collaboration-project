@@ -25,7 +25,7 @@ export class Chatbox extends ReactWidget {
     }
 
     render(): JSX.Element {
-        return <ChatBoxComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider}/>;
+        return <ChatBoxComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider} userRoles={this._roles}/>;
     }
     
 }
@@ -34,6 +34,7 @@ interface ChatBoxComponentProps {
 
   currentUser: User.IManager;
   awarenessProvider: WebSocketAwarenessProvider;
+  userRoles: Roles
 
 }
 
@@ -47,10 +48,11 @@ interface ChatBoxComponentState {
 
 }
 
-const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarenessProvider}) => {
+const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarenessProvider, userRoles}) => {
 
     const user = currentUser;
     const aProvider = awarenessProvider;
+//    const roles = userRoles;
 
     // Getter and setter for the chat state
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});
