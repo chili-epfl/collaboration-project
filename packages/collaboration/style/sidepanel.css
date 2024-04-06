@@ -137,6 +137,7 @@
 .jp-Chat-Panel {
   display: flex;
   flex-direction: column;
+  max-height: 420px;
   overflow-y: auto;
 }
 
@@ -302,7 +303,7 @@
 }
 
 .jp-Poll-Progress { 
-  background-color: #177013;
+  background-color: green;
   height: 100%;
 }
 
@@ -312,4 +313,20 @@
 
 .underline {
   text-decoration: underline;
+}
+
+/************************************************************
+                Role-related classes
+*************************************************************/
+.jp-Role-label {
+  background-color: blue;
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: white;
+  font-size: 1em;
+  margin-left: 5px;
+}
+
+.jp-Role-label.owner{
+  background-color: purple;
 }

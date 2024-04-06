@@ -54,7 +54,8 @@ export class Roles {
             let cRole = this._map.get(c);
 
             if (cRole === undefined) {
-                map.set(c, 0);
+                // Test stuff; REPLACE BY 0
+                map.set(c, (Math.floor(Math.random()*2)+1));
             } else {
                 map.set(c, cRole);
             }

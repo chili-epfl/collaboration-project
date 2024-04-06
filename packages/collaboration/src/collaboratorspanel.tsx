@@ -14,7 +14,7 @@ import { User } from '@jupyterlab/services';
 import { PathExt } from '@jupyterlab/coreutils';
 
 import { ICollaboratorAwareness } from './tokens';
-import { Roles } from './roles';
+import { Roles, Role } from './roles';
 
 /**
  * The CSS class added to collaborators panel.
@@ -93,12 +93,12 @@ export class CollaboratorsPanel extends Panel {
 export class CollaboratorsBody extends ReactWidget {
   private _collaborators: ICollaboratorAwareness[] = [];
   private _fileopener: (path: string) => void;
-//  private _roles: Roles;
+  private _roles: Roles;
 
   constructor(fileopener: (path: string) => void, roles: Roles) {
     super();
     this._fileopener = fileopener;
-//    this._roles = roles;
+    this._roles = roles;
     this.addClass(COLLABORATORS_LIST_CLASS);
   }
 
@@ -137,6 +137,16 @@ export class CollaboratorsBody extends ReactWidget {
 
       const displayName = `${value.user.display_name} ${separator} ${current}`;
 
+      let roleLabel = null;
+
+      const userRole = this._roles.get(value.user);
+      if (userRole === Role.Teacher || userRole === Role.Owner) {
+        const labelClass = userRole === Role.Teacher ? 'jp-Role-label' : 'jp-Role-label owner';
+        const labelContent = userRole === Role.Teacher ? 'Teacher' : 'Owner';
+        roleLabel = <div className={labelClass}>{labelContent}</div>;
+      }
+
+
       return (
         <div
           className={
@@ -154,6 +164,7 @@ export class CollaboratorsBody extends ReactWidget {
             <span>{value.user.initials}</span>
           </div>
           <span>{displayName}</span>
+          {roleLabel}
         </div>
       );
     });
