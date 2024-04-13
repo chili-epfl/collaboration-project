@@ -139,7 +139,7 @@ export class CollaboratorsBody extends ReactWidget {
 
       let roleLabel = null;
 
-      const userRole = this._roles.get(value.user);
+      const userRole = this._roles.get(value.user.username);
       if (userRole === Role.Teacher || userRole === Role.Owner) {
         const labelClass = userRole === Role.Teacher ? 'jp-Role-label' : 'jp-Role-label owner';
         const labelContent = userRole === Role.Teacher ? 'Teacher' : 'Owner';

@@ -5,6 +5,8 @@ import { IChatMessage, WebSocketAwarenessProvider } from '@jupyter/docprovider';
 import { ICollaboratorAwareness } from './tokens';
 
 import * as msgEnc from './messageEncoding';
+import * as time from 'lib0/time';
+
 
 export enum Role {
     Student,
@@ -18,89 +20,105 @@ export interface RoleUpdate {
 }
 
 export class Roles {
-    private _collaborators: User.IIdentity[] = [];
-    private _map = new Map<User.IIdentity, Role>;
+    private _collaborators: string[] = [];
+    private _map = new Map<string, Role>;
     private _awareness: Awareness;
     private _aProvider: WebSocketAwarenessProvider;
+    private _connectedAt: number;
+    private _currentUser: User.IManager;
 
     constructor(currentUser: User.IManager, awareness: Awareness, aProvider: WebSocketAwarenessProvider) {
         this._awareness = awareness;
         this._aProvider = aProvider;
+        this._connectedAt = time.getUnixTime();
+        this._currentUser = currentUser;
 
         this._awareness.on('change', this._onAwarenessChanged);
 
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
 
         // Test stuff before actual role assignments; REMOVE
-        this._map.set(currentUser.identity!, Math.floor(Math.random()*3));
+        this._map.set(currentUser.identity!.username, Role.Owner);
 
-        // TODO: are you the owner of the files? If yes, add a map pair with your name and Owner; else you're a Student for now
+        // Once connection is set, request other users' timestamps to check if one came before 
+        setTimeout(() => {this._aProvider.sendMessage('times')}, 200);
+
+        // Once connection is set, receive everyone's roles to populate the user's role map
+        setTimeout(() => {this._aProvider.sendMessage('roles')}, 250);
     }
 
     // Handle collaborator change
     private _onAwarenessChanged = () => {
+
         const state = this._awareness.getStates() as any;
-        const collaborators: User.IIdentity[] = [];
+        const collaborators: string[] = [];
 
         state.forEach((value: ICollaboratorAwareness, key: any) => {
-            collaborators.push(value.user);
+            collaborators.push(value.user.username);
         });
 
         this._collaborators = collaborators;
 
-        const map = new Map<User.IIdentity, Role>;
+        const map = new Map<string, Role>;
 
         this._collaborators.forEach(c => {
             let cRole = this._map.get(c);
 
             if (cRole === undefined) {
-                // Test stuff; REPLACE BY 0
-                map.set(c, (Math.floor(Math.random()*2)+1));
+                map.set(c, Role.Student);
+
             } else {
                 map.set(c, cRole);
             }
+
         });
 
         this._map = map;
-
-        // Debug line; REMOVE
-        Array.from(this._map.keys()).forEach(k => console.log(k.name, ': ', this._map.get(k)));
-
     }
 
     // Externally set a user's role
-    set(key: User.IIdentity, value: Role): void {
+    set(key: string, value: Role): void {
         this._map.set(key, value);
         this._aProvider.sendMessage(msgEnc.roleUpdateToString({
-            user: key.username,
+            user: key,
             role: value
         }));
     }
 
     // Externally get a user's role
-    get(key: User.IIdentity): Role | undefined {
+    get(key: string): Role | undefined {
         return this._map.get(key);
     }
 
-    // Handles incoming role changes from external users
+    // Handles incoming messages
     private _onMessageReceived(_: any, newMessage: IChatMessage) : void {
         const parts = newMessage.content.body.split('♠');
+
+        // If role update, update the map
         if (parts[0] === 'rup') {
             const decMessage = msgEnc.stringToRoleUpdate(newMessage.content.body);
+            this._map.set(decMessage.user, decMessage.role);
 
-            const user = this._usernameToId(decMessage.user);
+        // If timestamp request, send the user's timestamp
+        } else if (parts[0] === 'times') {
+            this._aProvider.sendMessage(msgEnc.timestampToString(this._connectedAt));
 
-            this._map.set(user!, decMessage.role);
+        // If timestamp, check if they connected before the user
+        } else if (parts[0] === 'stamp') {
+            const time = msgEnc.stringToTimestamp(newMessage.content.body);
 
+            if (time < this._connectedAt && this._map.get(this._currentUser.identity!.username) === Role.Owner) {
+                this.set(this._currentUser.identity!.username, Role.Student);
+
+            }
+
+        // If role request, send the user's role
+        } else if (parts[0] === 'roles') {
+            this._aProvider.sendMessage(msgEnc.roleUpdateToString({
+                user: this._currentUser.identity!.username,
+                role: this._map.get(this._currentUser.identity!.username)!
+            }));
         }
-    }
-
-    // Helper function for _onMessageReceived
-    private _usernameToId(username: string): User.IIdentity | undefined {
-        Array.from(this._map.keys()).forEach(k => {if (k.username === username) return k});
-
-        return undefined;
-
     }
 
 }

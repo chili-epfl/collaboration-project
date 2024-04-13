@@ -121,3 +121,22 @@ export function stringToRoleUpdate(s: string): RoleUpdate {
     }
 
 }
+
+export function timestampToString(time: number): string {
+
+    return `stamp♠${time.toString()}`;
+}
+
+export function stringToTimestamp(s: string): number {
+
+    const parts = s.split('♠');
+
+    if (parts.length !== 2) throw new Error('Invalid input format');
+
+    const [_, timeStr] = parts;
+
+    const time = parseInt(timeStr, 10);
+
+    return time;
+
+}

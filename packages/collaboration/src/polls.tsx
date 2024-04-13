@@ -191,7 +191,7 @@ const PollListComponent: React.FC<PollListComponentProps> = ({currentUser, aware
             </div>
 
             {/* Allow poll creation only if user isn't a student */}
-            {roles.get(user.identity!) !== Role.Student && (
+            {roles.get(user.identity!.username) !== Role.Student && (
                 <div>
                     {/* Poll question field */}
                     <div className='jp-Poll-QuestionFieldBox'>
