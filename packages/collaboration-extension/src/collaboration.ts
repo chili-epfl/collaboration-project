@@ -227,13 +227,16 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
   description:
     'Add a way to keep track of the cell each user is currently on',
   autoStart: true,
-  requires: [INotebookTracker],
+  requires: [IGlobalAwareness, INotebookTracker],
   activate: (
     app: JupyterFrontEnd,
+    awareness: Awareness,
     tracker: INotebookTracker
   ): void => {
 
-    /* const cellTracker = */new CellTracker(tracker);
+    const { user } = app.serviceManager;
+
+    /* const cellTracker = */new CellTracker(user, awareness, awarenessProvider, tracker);
 
   }
 

@@ -1,6 +1,7 @@
 import { IChatMessage } from '@jupyter/docprovider';
 import { Poll, PollUpdate } from './polls';
 import { RoleUpdate } from './roles';
+import { UserActivity } from './cellTracker';
 
 export function msgToString(msg: IChatMessage): string {
 
@@ -138,5 +139,38 @@ export function stringToTimestamp(s: string): number {
     const time = parseInt(timeStr, 10);
 
     return time;
+}
 
+export function activityToString(act: UserActivity): string {
+
+    const faultyChar = act.file.includes('♠');
+
+    if (faultyChar) throw new Error(`File name can't contain character ♠`);
+
+    return `act♠${act.file}♠${act.cell.toString()}`;
+}
+
+export function stringToActivity(s: string): UserActivity {
+
+    const parts = s.split('♠');
+
+    if (parts.length !== 3) throw new Error('Invalid input format');
+
+    const [_, file, cellStr] = parts;
+
+    const cell = parseInt(cellStr, 10);
+
+    return {
+        file: file,
+        cell: cell
+    }
+}
+
+export function actDelToString(act: UserActivity): string {
+
+    const faultyChar = act.file.includes('♠');
+
+    if (faultyChar) throw new Error(`File name can't contain character ♠`);
+
+    return `del♠${act.file}♠${act.cell.toString()}`;
 }

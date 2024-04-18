@@ -37,7 +37,6 @@ export class Roles {
 
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
 
-        // Test stuff before actual role assignments; REMOVE
         this._map.set(currentUser.identity!.username, Role.Owner);
 
         // Once connection is set, receive everyone's roles to populate the user's role map
