@@ -15,3 +15,4 @@ export * from './chatbox';
 export * from './messageEncoding';
 export * from './polls';
 export * from './roles';
+export * from './cellTracker';
