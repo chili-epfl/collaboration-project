@@ -1,4 +1,4 @@
-import { INotebookTracker } from '@jupyterlab/notebook';
+import { INotebookTracker, /*NotebookPanel*/ } from '@jupyterlab/notebook';
 import { User } from '@jupyterlab/services';
 
 import { Awareness } from 'y-protocols/awareness';
@@ -62,10 +62,18 @@ export class CellTracker {
     private _onFileChanged = () => {
 
         this._justChangedFiles = true;
-        this._userActivity = [];
+        setTimeout(() => {this._initialiseTrackerArray();}, 500);
 
         setTimeout(() => {this._aProvider.sendMessage('activity')}, 700);
 
+    }
+
+    private _initialiseTrackerArray() {
+
+        const cells = this._tracker.currentWidget?.content.widgets.length ?? 0;
+
+        console.log(`Hey this notebook has ${cells} cells`);
+        this._userActivity = new Array(cells).fill(0);
     }
 
     // Notice others when changing cells
@@ -86,7 +94,7 @@ export class CellTracker {
 
                 this._userActivity[this._currentActivity.cell]++;
 
-                if (this._currentActivity.file === oldActivity.file && oldActivity.cell >= 0) this._userActivity[oldActivity.cell]--;
+                if (this._currentActivity.file === oldActivity.file && oldActivity.cell >= 0 && this._userActivity[oldActivity.cell] > 0) this._userActivity[oldActivity.cell]--;
 
                 this._logActivity();
             }
@@ -128,7 +136,7 @@ export class CellTracker {
 
             const decMessage = msgEnc.stringToActivity(newMessage.content.body);
 
-            if (decMessage.file === this._currentActivity.file && decMessage.cell >= 0) {
+            if (decMessage.file === this._currentActivity.file && decMessage.cell >= 0 && this._userActivity[decMessage.cell] > 0) {
 
                 this._userActivity[decMessage.cell]--;
             } 
