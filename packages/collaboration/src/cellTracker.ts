@@ -19,6 +19,7 @@ export class CellTracker {
     private _awareness: Awareness;
     private _currentActivity: UserActivity = { file: '', cell: -1 };
     private _currentUser: User.IManager;
+    private _justChangedFiles: boolean = false;
     private _tracker: INotebookTracker;
     private _userActivity: number[] = [];
 
@@ -31,6 +32,9 @@ export class CellTracker {
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
         this._tracker.activeCellChanged.connect(this._onCellChanged, this);
         this._tracker.currentChanged.connect(this._onFileChanged, this);
+
+        // Remove current activity when user disconnects
+        window.addEventListener('beforeunload', () => {this._aProvider.sendMessage(msgEnc.actDelToString(this._currentActivity))});
 
     }
 
@@ -54,19 +58,24 @@ export class CellTracker {
         this._currentActivity = { file: currentFile[2], cell: cellIndex };
     }
 
+    // Clear tracker data when changing files
     private _onFileChanged = () => {
 
-        console.log('FILE CHANGED');
-
+        this._justChangedFiles = true;
         this._userActivity = [];
 
         setTimeout(() => {this._aProvider.sendMessage('activity')}, 700);
 
     }
 
+    // Notice others when changing cells
     private _onCellChanged = () => {
 
-        console.log('CELL CHANGED');
+        if (this._justChangedFiles) {
+
+            this._justChangedFiles = false;
+            return;
+        }
 
         const oldActivity = this._currentActivity;
 
@@ -122,12 +131,13 @@ export class CellTracker {
             if (decMessage.file === this._currentActivity.file && decMessage.cell >= 0) {
 
                 this._userActivity[decMessage.cell]--;
-            }
+            } 
 
         }
 
     }
 
+    // Cool little debug log function
     private _logActivity = () => {
 
         this._userActivity.forEach((element, index) => console.log(`Cell ${index}: ${element}`));
