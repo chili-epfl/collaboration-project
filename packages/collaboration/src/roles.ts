@@ -37,10 +37,7 @@ export class Roles {
 
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
 
-        // Test stuff before actual role assignments; REMOVE
         this._map.set(currentUser.identity!.username, Role.Owner);
-
-        console.log(`You're the owner! (For now at least)`);
 
         // Once connection is set, receive everyone's roles to populate the user's role map
         setTimeout(() => {this._aProvider.sendMessage('roles')}, 400);
@@ -113,9 +110,6 @@ export class Roles {
 
             if (time < this._connectedAt && this._map.get(this._currentUser.identity!.username) === Role.Owner) {
                 this.set(this._currentUser.identity!.username, Role.Student);
-
-                console.log(`You're not the owner anymore (someone connected`, (this._connectedAt - time), `milliseconds before you)`)
-
             }
 
         // If role request, send the user's role

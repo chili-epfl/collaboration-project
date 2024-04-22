@@ -19,7 +19,8 @@ import {
   menuBarPlugin,
   rtcGlobalAwarenessPlugin,
   rtcPanelPlugin,
-  userEditorCursors
+  userEditorCursors,
+  cellTracker
 } from './collaboration';
 import { sharedLink } from './sharedlink';
 
@@ -37,7 +38,8 @@ const plugins: JupyterFrontEndPlugin<any>[] = [
   rtcGlobalAwarenessPlugin,
   rtcPanelPlugin,
   sharedLink,
-  userEditorCursors
+  userEditorCursors,
+  cellTracker
 ];
 
 export default plugins;

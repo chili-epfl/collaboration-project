@@ -26,6 +26,7 @@ import { Menu, MenuBar } from '@lumino/widgets';
 import { IAwareness } from '@jupyter/ydoc';
 
 import {
+  CellTracker,
   Chatbox,
   CollaboratorsPanel,
   IGlobalAwareness,
@@ -40,6 +41,7 @@ import {
 
 import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
+import { INotebookTracker } from '@jupyterlab/notebook';
 
 let awarenessProvider: WebSocketAwarenessProvider;
 
@@ -218,3 +220,24 @@ export const userEditorCursors: JupyterFrontEndPlugin<void> = {
     });
   }
 };
+
+export const cellTracker: JupyterFrontEndPlugin<void> = {
+
+  id: '@jupyter/collaboration-extension:cellTracker',
+  description:
+    'Add a way to keep track of the cell each user is currently on',
+  autoStart: true,
+  requires: [IGlobalAwareness, INotebookTracker],
+  activate: (
+    app: JupyterFrontEnd,
+    awareness: Awareness,
+    tracker: INotebookTracker
+  ): void => {
+
+    const { user } = app.serviceManager;
+
+    /* const cellTracker = */new CellTracker(user, awareness, awarenessProvider, tracker);
+
+  }
+
+}
