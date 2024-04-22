@@ -43,10 +43,10 @@ export class Roles {
         console.log(`You're the owner! (For now at least)`);
 
         // Once connection is set, receive everyone's roles to populate the user's role map
-        setTimeout(() => {this._aProvider.sendMessage('roles')}, 200);
+        setTimeout(() => {this._aProvider.sendMessage('roles')}, 400);
 
         // Once connection is set, request other users' timestamps to check if one came before 
-        setTimeout(() => {this._aProvider.sendMessage('times')}, 250);
+        setTimeout(() => {this._aProvider.sendMessage('times')}, 500);
 
     }
 
