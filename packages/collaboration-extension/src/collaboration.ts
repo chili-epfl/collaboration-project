@@ -235,7 +235,7 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
 
     tracker.currentChanged.connect(() => {
       if (tracker.currentWidget) {
-        tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!))
+        tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!));
       }
     })
 
