@@ -26,7 +26,6 @@ import { Menu, MenuBar } from '@lumino/widgets';
 import { IAwareness } from '@jupyter/ydoc';
 
 import {
-  CellTracker,
   Chatbox,
   CollaboratorsPanel,
   IGlobalAwareness,
@@ -35,6 +34,7 @@ import {
   remoteUserCursors,
   Roles,
   RendererUserMenu,
+  trackActivity,
   UserInfoPanel,
   UserMenu
 } from '@jupyter/collaboration';
@@ -227,16 +227,17 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
   description:
     'Add a way to keep track of the cell each user is currently on',
   autoStart: true,
-  requires: [IGlobalAwareness, INotebookTracker],
+  requires: [INotebookTracker],
   activate: (
     app: JupyterFrontEnd,
-    awareness: Awareness,
     tracker: INotebookTracker
   ): void => {
 
-    const { user } = app.serviceManager;
-
-    /* const cellTracker = */new CellTracker(user, awareness, awarenessProvider, tracker);
+    tracker.currentChanged.connect(() => {
+      if (tracker.currentWidget) {
+        tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!))
+      }
+    })
 
   }
 

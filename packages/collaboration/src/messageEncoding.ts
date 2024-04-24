@@ -1,7 +1,7 @@
 import { IChatMessage } from '@jupyter/docprovider';
 import { Poll, PollUpdate } from './polls';
 import { RoleUpdate } from './roles';
-import { UserActivity } from './cellTracker';
+//import { UserActivity } from './cellTracker';
 
 export function msgToString(msg: IChatMessage): string {
 
@@ -141,7 +141,7 @@ export function stringToTimestamp(s: string): number {
     return time;
 }
 
-export function activityToString(act: UserActivity): string {
+/*export function activityToString(act: UserActivity): string {
 
     const faultyChar = act.file.includes('♠');
 
@@ -173,4 +173,4 @@ export function actDelToString(act: UserActivity): string {
     if (faultyChar) throw new Error(`File name can't contain character ♠`);
 
     return `del♠${act.file}♠${act.cell.toString()}`;
-}
+}*/
