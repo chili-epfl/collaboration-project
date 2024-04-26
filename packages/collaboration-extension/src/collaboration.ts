@@ -26,6 +26,7 @@ import { Menu, MenuBar } from '@lumino/widgets';
 import { IAwareness } from '@jupyter/ydoc';
 
 import {
+  addDisplay,
   Chatbox,
   CollaboratorsPanel,
   IGlobalAwareness,
@@ -248,4 +249,37 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
 
   }
 
+}
+
+export const activeUsersDisplay: JupyterFrontEndPlugin<void> = {
+
+  id: '@jupyter/collaboration-extension:activeUsersDisplay',
+  description:
+    'Display how many users are working on each cell',
+  autoStart: true,
+  requires: [INotebookTracker],
+  activate: (
+    app: JupyterFrontEnd,
+    tracker: INotebookTracker
+  ): void => {
+
+    tracker.widgetAdded.connect((sender, notebookPanel) => {
+      const notebook = notebookPanel.content;
+
+      notebook.model?.cells.changed.connect(() => {
+
+        notebook.widgets.forEach(cell => {
+          addDisplay(cell);
+
+          cell.model.metadataChanged.connect(() => {
+            addDisplay(cell);
+          })
+        });
+
+      });
+
+      notebook.widgets.forEach(cell => addDisplay(cell));
+
+    });
+  }
 }
