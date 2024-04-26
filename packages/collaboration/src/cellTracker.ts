@@ -1,16 +1,32 @@
-//import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
-import { NotebookPanel } from '@jupyterlab/notebook';
+import { NotebookPanel, Notebook } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
-//import { ILabShell } from '@jupyterlab/application';
+
+let prevCell: Cell | null = null;
+let disconnected = false;
+let notebook: Notebook;
+
 
 export function trackActivity(nb: NotebookPanel) {
 
-    let prevCell: Cell | null = null;
-    let disconnected = false;
+    notebook = nb.content;
 
-    const notebook = nb.content;
+    notebook.activeCellChanged.connect(onCellChanged);
 
-    notebook.activeCellChanged.connect(() => {
+}
+
+export function stopTracking(nb: NotebookPanel | null) {
+
+    if (nb) {
+
+        nb.content.activeCellChanged.disconnect(onCellChanged);
+
+    }
+
+}
+
+function onCellChanged() {
+
+    {
 
         const cell = notebook.activeCell;
 
@@ -40,25 +56,27 @@ export function trackActivity(nb: NotebookPanel) {
 
         prevCell = cell;
 
-    });
-
-    // Increment a cell's active users count
-    function addActivity(cell: Cell) {
-
-        let activeUsers = cell.model.getMetadata('active_users');
-        if (Number.isNaN(activeUsers)) activeUsers = 0;
-        activeUsers++;
-        cell.model.setMetadata('active_users', activeUsers);
-        
     }
 
-    // Decrement a cell's active users count
-    function removeActivity(cell: Cell) {
-        
-        let activeUsers = cell.model.getMetadata('active_users');
-        activeUsers--;
-        cell.model.setMetadata('active_users', activeUsers);
+}
 
-    }
+// Increment a cell's active users count
+function addActivity(cell: Cell) {
+
+    let activeUsers = cell.model.getMetadata('active_users');
+    if (Number.isNaN(activeUsers)) activeUsers = 0;
+    activeUsers++;
+    cell.model.setMetadata('active_users', activeUsers);
+        
+}
+
+// Decrement a cell's active users count
+function removeActivity(cell: Cell) {
+        
+    if (cell.model === null) return;
+
+    let activeUsers = cell.model.getMetadata('active_users');
+    activeUsers--;
+    cell.model.setMetadata('active_users', activeUsers);
 
 }

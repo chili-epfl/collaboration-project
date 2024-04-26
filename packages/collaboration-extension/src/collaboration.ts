@@ -34,6 +34,7 @@ import {
   remoteUserCursors,
   Roles,
   RendererUserMenu,
+  stopTracking,
   trackActivity,
   UserInfoPanel,
   UserMenu
@@ -41,7 +42,7 @@ import {
 
 import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
-import { INotebookTracker } from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 let awarenessProvider: WebSocketAwarenessProvider;
 
@@ -233,9 +234,15 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
     tracker: INotebookTracker
   ): void => {
 
+    let previousPanel: NotebookPanel | null = null;
+
     tracker.currentChanged.connect(() => {
       if (tracker.currentWidget) {
         tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!));
+
+        stopTracking(previousPanel);
+
+        previousPanel = tracker.currentWidget;
       }
     })
 
