@@ -330,3 +330,10 @@
 .jp-Role-label.owner{
   background-color: purple;
 }
+
+/************************************************************
+                Activity tracking
+*************************************************************/
+.active-users-display {
+  padding-left: 75px;
+}
