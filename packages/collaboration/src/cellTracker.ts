@@ -64,6 +64,8 @@ function onCellChanged() {
 // Increment a cell's active users count
 function addActivity(cell: Cell) {
 
+    if (cell.model.id === undefined) return;
+
     // Fix for inconsistent tracking when swapping cells or changing their type
     if (undefinedStuff === 1) undefinedStuff = 2;
     else if (undefinedStuff === 2) {
