@@ -4,6 +4,7 @@ import { Cell } from '@jupyterlab/cells';
 let prevCell: Cell | null = null;
 let disconnected = false;
 let notebook: Notebook;
+let undefinedStuff = 0;
 
 
 export function trackActivity(nb: NotebookPanel) {
@@ -39,9 +40,17 @@ function onCellChanged() {
     {
 
         const cell = notebook.activeCell;
+        
+        console.log('HAHAHAH');
 
         // When entering a new cell, remove activity from previous cell's metadata
-        if (prevCell) removeActivity(prevCell);
+        if (prevCell) {
+
+            if (prevCell.model.id === undefined && undefinedStuff === 0) undefinedStuff = 1;
+            
+            removeActivity(prevCell);
+
+        }
 
         // When entering a new cell, add activity to its metadata
         if (cell) addActivity(cell);
@@ -54,6 +63,13 @@ function onCellChanged() {
 
 // Increment a cell's active users count
 function addActivity(cell: Cell) {
+
+    // Fix for inconsistent tracking when swapping cells or changing their type
+    if (undefinedStuff === 1) undefinedStuff = 2;
+    else if (undefinedStuff === 2) {
+        undefinedStuff = 0;
+        return;
+    }
 
     let activeUsers = cell.model.getMetadata('active_users');
     if (Number.isNaN(activeUsers)) activeUsers = 0;
