@@ -41,8 +41,6 @@ function onCellChanged() {
 
         const cell = notebook.activeCell;
         
-        console.log('HAHAHAH');
-
         // When entering a new cell, remove activity from previous cell's metadata
         if (prevCell) {
 

@@ -233,6 +233,7 @@ const userHover = hoverTooltip(
   (view, pos) => {
     const { awareness, ytext } = view.state.facet(editorAwarenessFacet);
     const ydoc = ytext.doc!;
+    const tooltipContent: { name: string, color: string }[] = [];
 
     for (const [clientID, state] of awareness.getStates()) {
       if (clientID === awareness.doc.clientID) {
@@ -252,20 +253,35 @@ const userHover = hoverTooltip(
         }
         // Use some margin around the cursor to display the user.
         if (head.index - 1 <= pos && pos <= head.index + 1) {
-          return {
-            pos: head.index,
-            above: true,
-            create: () => {
-              const dom = document.createElement('div');
-              dom.classList.add('jp-remote-userInfo');
-              dom.style.backgroundColor = state.user?.color ?? 'darkgrey';
-              dom.textContent =
-                (state as IAwarenessState).user?.display_name ?? 'Anonymous';
-              return { dom };
-            }
-          };
+          tooltipContent.push({
+            name: (state as IAwarenessState).user?.display_name ?? 'Anonymous',
+            color: (state as IAwarenessState).user?.color ?? 'darkgrey'
+          });
         }
       }
+    }
+
+    if (tooltipContent.length > 0) {
+
+      return {
+        pos,
+        above: true,
+        create: () => {
+          const dom = document.createElement('div');
+          dom.classList.add('jp-remote-userInfo');
+          
+          tooltipContent.forEach(({ name, color }, index) => {
+            const span = document.createElement('span');
+
+            span.textContent = name.concat((index < tooltipContent.length - 1) ? ', ' : '');
+            span.style.backgroundColor = color;
+            dom.appendChild(span)
+          });
+          
+          return {dom};
+        }
+      }
+
     }
 
     return null;

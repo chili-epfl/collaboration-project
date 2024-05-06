@@ -37,6 +37,8 @@ export class Roles {
 
         this._aProvider.messageStream.connect(this._onMessageReceived, this);
 
+        console.log(`Connected at ${this._connectedAt}`);
+
         this._map.set(currentUser.identity!.username, Role.Owner);
 
         // Once connection is set, receive everyone's roles to populate the user's role map
