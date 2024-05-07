@@ -26,6 +26,7 @@ import { Menu, MenuBar } from '@lumino/widgets';
 import { IAwareness } from '@jupyter/ydoc';
 
 import {
+  ActivityDisplay,
   addDisplay,
   Chatbox,
   CollaboratorsPanel,
@@ -138,11 +139,12 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
   id: '@jupyter/collaboration-extension:rtcPanel',
   description: 'Add side panel to display all currently connected users.',
   autoStart: true,
-  requires: [IGlobalAwareness],
+  requires: [IGlobalAwareness, INotebookTracker],
   optional: [ITranslator],
   activate: (
     app: JupyterFrontEnd,
     awareness: Awareness,
+    tracker: INotebookTracker,
     translator: ITranslator | null
   ): void => {
 
@@ -178,6 +180,10 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     );
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
+
+    const activityDisplay = new ActivityDisplay(tracker);
+    activityDisplay.title.label = trans.__('User activity');
+    userPanel.addWidget(activityDisplay);
 
 
     const chatPanel = new SidePanel({
