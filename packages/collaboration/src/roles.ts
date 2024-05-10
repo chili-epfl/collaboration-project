@@ -1,10 +1,14 @@
+import { IChatMessage, WebSocketAwarenessProvider } from '@jupyter/docprovider';
 import { User } from '@jupyterlab/services';
+import { ITranslator } from '@jupyterlab/translation';
+
 import { Awareness } from 'y-protocols/awareness';
 
-import { IChatMessage, WebSocketAwarenessProvider } from '@jupyter/docprovider';
-import { ICollaboratorAwareness } from './tokens';
 
+import { showOwnerDialog } from './ownerdialog';
+import { ICollaboratorAwareness } from './tokens';
 import * as msgEnc from './messageEncoding';
+
 import * as time from 'lib0/time';
 
 
@@ -26,12 +30,14 @@ export class Roles {
     private _aProvider: WebSocketAwarenessProvider;
     private _connectedAt: number;
     private _currentUser: User.IManager;
+    private _translator: ITranslator | null;
 
-    constructor(currentUser: User.IManager, awareness: Awareness, aProvider: WebSocketAwarenessProvider) {
+    constructor(currentUser: User.IManager, awareness: Awareness, aProvider: WebSocketAwarenessProvider, translator: ITranslator | null) {
         this._awareness = awareness;
         this._aProvider = aProvider;
         this._connectedAt = time.getUnixTime();
         this._currentUser = currentUser;
+        this._translator = translator;
 
         this._awareness.on('change', this._onAwarenessChanged);
 
@@ -46,6 +52,14 @@ export class Roles {
 
         // Once connection is set, request other users' timestamps to check if one came before 
         setTimeout(() => {this._aProvider.sendMessage('times')}, 500);
+
+        setTimeout(async () => {
+            if (this._map.get(currentUser.identity!.username) === Role.Owner) {
+
+                await showOwnerDialog(this._translator);
+
+            }
+        }, 1000);
 
     }
 

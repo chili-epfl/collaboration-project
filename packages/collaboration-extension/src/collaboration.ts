@@ -27,7 +27,6 @@ import { IAwareness } from '@jupyter/ydoc';
 
 import {
   ActivityDisplay,
-  addDisplay,
   Chatbox,
   CollaboratorsPanel,
   IGlobalAwareness,
@@ -161,7 +160,7 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     userPanel.addClass('jp-RTCPanel');
     app.shell.add(userPanel, 'left', { rank: 300 });
 
-    const roles = new Roles(user, awareness, awarenessProvider);
+    const roles = new Roles(user, awareness, awarenessProvider, translator);
 
     const currentUserPanel = new UserInfoPanel(user, roles);
     currentUserPanel.title.label = trans.__('User info');
@@ -181,10 +180,9 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
 
-    const activityDisplay = new ActivityDisplay(tracker);
+    const activityDisplay = new ActivityDisplay(tracker, user, roles);
     activityDisplay.title.label = trans.__('User activity');
     userPanel.addWidget(activityDisplay);
-
 
     const chatPanel = new SidePanel({
       alignment: 'justify'
@@ -204,6 +202,7 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
 
     pollTab.title.label = trans.__('Polls');
     chatPanel.addWidget(pollTab);
+
   }
 };
 
@@ -255,37 +254,4 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
 
   }
 
-}
-
-export const activeUsersDisplay: JupyterFrontEndPlugin<void> = {
-
-  id: '@jupyter/collaboration-extension:activeUsersDisplay',
-  description:
-    'Display how many users are working on each cell',
-  autoStart: true,
-  requires: [INotebookTracker],
-  activate: (
-    app: JupyterFrontEnd,
-    tracker: INotebookTracker
-  ): void => {
-
-    tracker.widgetAdded.connect((sender, notebookPanel) => {
-      const notebook = notebookPanel.content;
-
-      notebook.model?.cells.changed.connect(() => {
-
-        notebook.widgets.forEach(cell => {
-          addDisplay(cell);
-
-          cell.model.metadataChanged.connect(() => {
-            addDisplay(cell);
-          })
-        });
-
-      });
-
-      notebook.widgets.forEach(cell => addDisplay(cell));
-
-    });
-  }
 }
