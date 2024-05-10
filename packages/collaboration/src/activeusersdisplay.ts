@@ -6,7 +6,7 @@ class ActiveUsersDisplay extends Widget {
     constructor(cell: Cell) {
         super();
 
-        this.addClass('active-users-display');
+        this.addClass('jp-active-users-display');
 
         this.updateContent(cell);
     }
@@ -25,7 +25,7 @@ class ActiveUsersDisplay extends Widget {
 
 export function addDisplay(cell: Cell) {
 
-    const display = cell.node.getElementsByClassName('active-users-display')[0];
+    const display = cell.node.getElementsByClassName('jp-active-users-display')[0];
     const activeUsersDisplay = new ActiveUsersDisplay(cell);
 
 

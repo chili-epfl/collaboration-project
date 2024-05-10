@@ -49,6 +49,7 @@
     "watch": "lerna run watch"
   },
   "devDependencies": {
+    "@types/react-plotly.js": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "~5.55.0",
     "@typescript-eslint/parser": "~5.55.0",
     "eslint": "~8.36.0",
@@ -65,5 +66,8 @@
     "stylelint-prettier": "^3.0.0",
     "typedoc": "~0.23.28",
     "typescript": "~5.0.4"
+  },
+  "dependencies": {
+    "react-plotly.js": "^2.6.0"
   }
 }

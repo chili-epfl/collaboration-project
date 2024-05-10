@@ -334,6 +334,14 @@
 /************************************************************
                 Activity tracking
 *************************************************************/
-.active-users-display {
+.jp-active-users-display {
   padding-left: 75px;
+}
+
+.jp-graph {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  margin-top: 3px;
+  margin-left: 3px;
 }
