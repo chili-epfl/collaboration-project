@@ -90,7 +90,7 @@ const ActivityDisplayComponent: React.FC<ActivityDisplayComponentProps> = ({trac
         type: 'bar',
         orientation: 'h',
         marker: {color: 'green'},
-        hovertemplate: '%{x} user(s) on cell %{y}'
+        hovertemplate: '%{x} user(s) on cell %{y}<extra></extra>'
     }] as Plotly.Data[];
 
     const layout = {
@@ -108,9 +108,6 @@ const ActivityDisplayComponent: React.FC<ActivityDisplayComponentProps> = ({trac
             r: 30,
             t: 30,
             b: 60
-        },
-        hoverlabel: {
-            namelength: 0
         }
     };
 
