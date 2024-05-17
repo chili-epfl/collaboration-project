@@ -1,13 +1,25 @@
 import { NotebookPanel, Notebook } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
+import { User } from '@jupyterlab/services';
+
 
 let prevCell: Cell | null = null;
 let disconnected = false;
 let notebook: Notebook;
 let undefinedStuff = 0;
+let currentUser: SimpleUser;
+
+interface SimpleUser {
+
+    id: string,
+    name: string
+
+}
 
 
-export function trackActivity(nb: NotebookPanel) {
+export function trackActivity(nb: NotebookPanel, user: User.IManager) {
+
+    currentUser = { id: user.identity!.username, name: user.identity!.name }
 
     notebook = nb.content;
 
@@ -71,11 +83,9 @@ function addActivity(cell: Cell) {
         return;
     }
 
-    let activeUsers = cell.model.getMetadata('active_users');
-    if (Number.isNaN(activeUsers)) activeUsers = 0;
-    activeUsers++;
-    cell.model.setMetadata('active_users', activeUsers);
-        
+    let activeUsersArray = cell.model.getMetadata('active_users') || [];
+    activeUsersArray.push(currentUser);
+    cell.model.setMetadata('active_users', activeUsersArray);       
 }
 
 // Decrement a cell's active users count
@@ -83,9 +93,7 @@ function removeActivity(cell: Cell) {
         
     if (cell.model === null) return;
 
-    let activeUsers = cell.model.getMetadata('active_users');
-    activeUsers--;
-    if (activeUsers < 0) activeUsers = 0;
-    cell.model.setMetadata('active_users', activeUsers);
-
+    let activeUsersArray = cell.model.getMetadata('active_users') || [];
+    activeUsersArray = activeUsersArray.filter((user: SimpleUser) => user.id !== currentUser.id)
+    cell.model.setMetadata('active_users', activeUsersArray);
 }

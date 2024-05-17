@@ -51,7 +51,9 @@ const ActivityDisplayComponent: React.FC<ActivityDisplayComponentProps> = ({trac
         const updateCounts = (notebook: Notebook) => {
 
             const counts = notebook.widgets.map(cell => {
-                return cell.model.getMetadata('active_users') || 0;
+                let activeUsers = cell.model.getMetadata('active_users');
+                if (!activeUsers || !Array.isArray(activeUsers)) return 0;
+                return activeUsers.length;
             });
 
             setState(counts);

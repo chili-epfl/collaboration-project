@@ -240,11 +240,13 @@ export const cellTracker: JupyterFrontEndPlugin<void> = {
     tracker: INotebookTracker
   ): void => {
 
+    const { user } = app.serviceManager;
+
     let previousPanel: NotebookPanel | null = null;
 
     tracker.currentChanged.connect(() => {
       if (tracker.currentWidget) {
-        tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!));
+        tracker.currentWidget.revealed.then(() => trackActivity(tracker.currentWidget!, user));
 
         stopTracking(previousPanel);
 
