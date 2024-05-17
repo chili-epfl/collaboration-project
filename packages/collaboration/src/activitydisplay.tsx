@@ -4,9 +4,17 @@ import { User } from '@jupyterlab/services';
 
 import * as React from 'react';
 
-import { ActivityBarGraph } from './activitybargraph';
+// import { ActivityBarGraph } from './activitybargraph';
+import { ActivityDotPlot } from './activitydotplot';
 import { Roles } from './roles';
 
+export interface ActivityDisplayComponentProps {
+
+    tracker: INotebookTracker;
+    currentUser: User.IManager;
+    userRoles: Roles
+
+}
 
 export class ActivityDisplay extends ReactWidget {
 
@@ -25,7 +33,7 @@ export class ActivityDisplay extends ReactWidget {
     }
 
     render() {
-        return <ActivityBarGraph tracker={this._tracker} currentUser={this._currentUser} userRoles={this._roles}/>
+        return <ActivityDotPlot tracker={this._tracker} currentUser={this._currentUser} userRoles={this._roles}/>
     }
 
 }

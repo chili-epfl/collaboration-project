@@ -1,19 +1,10 @@
-import { INotebookTracker, Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { User } from '@jupyterlab/services';
+import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
-import { Roles, Role } from './roles';
-
-
-interface ActivityDisplayComponentProps {
-
-    tracker: INotebookTracker;
-    currentUser: User.IManager;
-    userRoles: Roles
-
-}
+import { ActivityDisplayComponentProps } from './activitydisplay';
+import { Role } from './roles';
 
 export const ActivityBarGraph: React.FC<ActivityDisplayComponentProps> = ({tracker, currentUser, userRoles}) => {
 

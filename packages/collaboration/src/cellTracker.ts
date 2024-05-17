@@ -9,7 +9,7 @@ let notebook: Notebook;
 let undefinedStuff = 0;
 let currentUser: SimpleUser;
 
-interface SimpleUser {
+export interface SimpleUser {
 
     id: string,
     name: string
