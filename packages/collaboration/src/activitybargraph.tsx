@@ -3,15 +3,13 @@ import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
-import { ActivityDisplayComponentProps } from './activitydisplay';
-import { Role } from './roles';
+import { GraphProps } from './activitydisplay';
 
-export const ActivityBarGraph: React.FC<ActivityDisplayComponentProps> = ({tracker, currentUser, userRoles}) => {
-
-    const user = currentUser;
-    const roles = userRoles;
+export const ActivityBarGraph: React.FC<GraphProps> = ({tracker}) => {
 
     const [state, setState] = React.useState<number[]>([]);
+
+    const MIN_HORIZONTAL_RANGE = 20;
 
     React.useEffect(() => {
 
@@ -52,6 +50,8 @@ export const ActivityBarGraph: React.FC<ActivityDisplayComponentProps> = ({track
         }
 
     }, [tracker]);
+
+    const maxXvalue = Math.max(Math.max(...state), MIN_HORIZONTAL_RANGE);
     
     const data = [{
         y: state.map((_, index) => index + 1),
@@ -66,7 +66,8 @@ export const ActivityBarGraph: React.FC<ActivityDisplayComponentProps> = ({track
         width: 300,
         height: 500,
         xaxis: {
-            title: 'Active users'
+            title: 'Active users',
+            range: [0, maxXvalue]
         },
         yaxis: {
             title: 'Cell', 
@@ -80,10 +81,6 @@ export const ActivityBarGraph: React.FC<ActivityDisplayComponentProps> = ({track
         }
     };
 
-    return <div>
-        {roles.get(user.identity!.username) === Role.Owner && (
-            <Plot className='jp-graph' data={data} layout={layout}/>
-        )}
-    </div>
+    return <Plot className='jp-graph' data={data} layout={layout}/>
 
 }

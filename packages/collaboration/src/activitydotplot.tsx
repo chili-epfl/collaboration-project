@@ -3,14 +3,10 @@ import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
-import { ActivityDisplayComponentProps } from './activitydisplay';
+import { GraphProps } from './activitydisplay';
 import { SimpleUser } from './cellTracker';
-import { Role } from './roles';
 
-export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracker, currentUser, userRoles}) => {
-
-    const user = currentUser;
-    const roles = userRoles;
+export const ActivityDotPlot: React.FC<GraphProps> = ({tracker}) => {
 
     const [state, setState] = React.useState<SimpleUser[][]>([]);
 
@@ -63,14 +59,14 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
         userArray.forEach((user, userIndex) => {
             yValues.push(-cellIndex - 1);
             xValues.push(userIndex + 1);
-            hoverText.push(`${user.name} on cell ${cellIndex}`);
+            hoverText.push(`${user.name} on cell ${cellIndex + 1}`);
         });
 
     });
 
     const maxCellIndex = state.length > 0 ? state.length - 1 : 0
     const tickvals = Array.from(Array(maxCellIndex + 2).keys()).map(index => -index);
-    const ticktext = Array.from(Array(maxCellIndex + 2).keys()).map(index => (index - 1).toString());
+    const ticktext = Array.from(Array(maxCellIndex + 2).keys()).map(index => (index).toString());
     const maxXvalue = Math.max(...xValues, MIN_HORIZONTAL_RANGE);
     
     const data = [{
@@ -106,10 +102,6 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
         }
     };
 
-    return <div>
-        {roles.get(user.identity!.username) === Role.Owner && (
-            <Plot className='jp-graph' data={data} layout={layout}/>
-        )}
-    </div>
+    return <Plot className='jp-graph' data={data} layout={layout}/>
 
 }
