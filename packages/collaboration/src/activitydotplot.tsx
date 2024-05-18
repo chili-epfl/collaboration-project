@@ -14,6 +14,8 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
 
     const [state, setState] = React.useState<SimpleUser[][]>([]);
 
+    const MIN_HORIZONTAL_RANGE = 20;
+
     React.useEffect(() => {
 
         const updateCounts = (notebook: Notebook) => {
@@ -59,7 +61,7 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
     state.forEach((userArray, cellIndex) => {
 
         userArray.forEach((user, userIndex) => {
-            yValues.push(-cellIndex);
+            yValues.push(-cellIndex - 1);
             xValues.push(userIndex + 1);
             hoverText.push(`${user.name} on cell ${cellIndex}`);
         });
@@ -67,9 +69,9 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
     });
 
     const maxCellIndex = state.length > 0 ? state.length - 1 : 0
-    const tickvals = Array.from(Array(maxCellIndex + 1).keys()).map(index => -index);
-    const ticktext = Array.from(Array(maxCellIndex + 1).keys()).map(index => index.toString());
-    
+    const tickvals = Array.from(Array(maxCellIndex + 2).keys()).map(index => -index);
+    const ticktext = Array.from(Array(maxCellIndex + 2).keys()).map(index => (index - 1).toString());
+    const maxXvalue = Math.max(...xValues, MIN_HORIZONTAL_RANGE);
     
     const data = [{
         y: yValues,
@@ -87,12 +89,12 @@ export const ActivityDotPlot: React.FC<ActivityDisplayComponentProps> = ({tracke
         height: 500,
         xaxis: {
             title: 'Active users',
-            range: [1, Math.max(...xValues) + 1]
+            range: [0.5, maxXvalue]
         },
         yaxis: {
             title: 'Cell', 
             autorange: false,
-            range: [-maxCellIndex, 0],
+            range: [-maxCellIndex - 1.5, -0.5],
             tickvals: tickvals,
             ticktext: ticktext
         },

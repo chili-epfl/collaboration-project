@@ -194,14 +194,14 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     app.shell.add(chatPanel, 'left', { rank: 301 });
 
     const chatbox = new Chatbox(user, awarenessProvider, roles);
-
     chatbox.title.label = trans.__('Chat with collaborators');
     chatPanel.addWidget(chatbox);
 
-    const pollTab = new PollList(user, awarenessProvider, roles);
-
-    pollTab.title.label = trans.__('Polls');
-    chatPanel.addWidget(pollTab);
+    setTimeout(() => {
+      const pollTab = new PollList(user, awarenessProvider, roles);
+      pollTab.title.label = trans.__('Polls');
+      chatPanel.addWidget(pollTab);
+    }, 1000);
 
   }
 };
