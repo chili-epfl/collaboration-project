@@ -182,6 +182,10 @@ interface ChatBoxMessageProps {
 
 const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user, currentUser}) => {
 
+  const tagged = message.includes(`@${currentUser.identity!.name}`);
+
+  const messageClass = tagged ? 'jp-Chat-Message-tagged' : 'jp-Chat-Message';
+
   // Adds line breaks back to the message
   const lineBreaksMessage = message.split('\n').map((line, index, array) => (
     <React.Fragment key={index}>
@@ -191,7 +195,7 @@ const ChatBoxMessage: React.FC<ChatBoxMessageProps> = ({message, user, currentUs
   ));
 
   return (
-    <div className='jp-Chat-Message'>
+    <div className={messageClass}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
 
         <strong style={{ marginRight: '5px', textDecoration: ((user === currentUser.identity!.name) ? 'underline' : 'none')}}>{user}</strong>
