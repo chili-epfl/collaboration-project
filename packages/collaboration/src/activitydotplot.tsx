@@ -114,6 +114,8 @@ export const ActivityDotPlot: React.FC<DotPlotProps> = ({tracker, app, chatPanel
 
     const handleDotClick = (data: any) => {
 
+        const username = data.points[0].text.split(' on ')[0];
+
         app.shell.activateById('jp-chat-panel');
 
         const chatbox = chatPanel.widgets.find(widget => widget.id === 'jp-chatbox') as Chatbox | null;
@@ -121,7 +123,7 @@ export const ActivityDotPlot: React.FC<DotPlotProps> = ({tracker, app, chatPanel
         if (chatbox) {
 
             chatbox.show();
-            chatbox.focusOnWritingField();
+            chatbox.focusOnWritingField(username);
 
         }
 

@@ -21,13 +21,19 @@ export class Chatbox extends ReactWidget {
       this.addClass('jp-Chat-Panel')
     }
 
-    focusOnWritingField() {
+    focusOnWritingField(username?: string) {
 
       const writingField = this.node?.querySelector('.jp-Chat-WritableField') as HTMLTextAreaElement | null;
 
       if (writingField) {
 
         writingField.focus();
+
+        if (username) {
+
+          writingField.value = `@${username} `;
+
+        }
 
       }
 
