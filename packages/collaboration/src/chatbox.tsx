@@ -6,26 +6,35 @@ import { User } from '@jupyterlab/services';
 import { WebSocketAwarenessProvider, IChatMessage } from '@jupyter/docprovider';
 
 import * as msgEnc from './messageEncoding';
-import { Roles } from './roles';
 
 export class Chatbox extends ReactWidget {
 
     private _currentUser: User.IManager;
     private _awarenessProvider: WebSocketAwarenessProvider;
-    private _roles: Roles;
     
-    constructor(currentUser: User.IManager, awarenessProvider: WebSocketAwarenessProvider, roles: Roles) {
+    constructor(currentUser: User.IManager, awarenessProvider: WebSocketAwarenessProvider) {
       super();
       
       this._currentUser = currentUser;
       this._awarenessProvider = awarenessProvider;
-      this._roles = roles;
 
       this.addClass('jp-Chat-Panel')
     }
 
+    focusOnWritingField() {
+
+      const writingField = this.node?.querySelector('.jp-Chat-WritableField') as HTMLTextAreaElement | null;
+
+      if (writingField) {
+
+        writingField.focus();
+
+      }
+
+    }
+
     render(): JSX.Element {
-        return <ChatBoxComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider} userRoles={this._roles}/>;
+        return <ChatBoxComponent currentUser={this._currentUser} awarenessProvider={this._awarenessProvider}/>;
     }
     
 }
@@ -34,7 +43,6 @@ interface ChatBoxComponentProps {
 
   currentUser: User.IManager;
   awarenessProvider: WebSocketAwarenessProvider;
-  userRoles: Roles
 
 }
 
@@ -48,11 +56,10 @@ interface ChatBoxComponentState {
 
 }
 
-const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarenessProvider, userRoles}) => {
+const ChatBoxComponent: React.FC<ChatBoxComponentProps> = ({currentUser, awarenessProvider}) => {
 
     const user = currentUser;
     const aProvider = awarenessProvider;
-//    const roles = userRoles;
 
     // Getter and setter for the chat state
     const [state, setState] = React.useState<ChatBoxComponentState>({message: '', messages: []});

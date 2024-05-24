@@ -180,9 +180,7 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     collaboratorsPanel.title.label = trans.__('Online Collaborators');
     userPanel.addWidget(collaboratorsPanel);
 
-    const activityDisplay = new ActivityDisplay(tracker, user, roles);
-    activityDisplay.title.label = trans.__('User activity');
-    userPanel.addWidget(activityDisplay);
+
 
     const chatPanel = new SidePanel({
       alignment: 'justify'
@@ -193,12 +191,18 @@ export const rtcPanelPlugin: JupyterFrontEndPlugin<void> = {
     chatPanel.addClass('jp-RTCPanel');
     app.shell.add(chatPanel, 'left', { rank: 301 });
 
-    const chatbox = new Chatbox(user, awarenessProvider, roles);
+    const chatbox = new Chatbox(user, awarenessProvider);
+    chatbox.id = 'jp-chatbox';
     chatbox.title.label = trans.__('Chat with collaborators');
     chatPanel.addWidget(chatbox);
 
+    const activityDisplay = new ActivityDisplay(tracker, user, roles, app, chatPanel);
+    activityDisplay.title.label = trans.__('User activity');
+    userPanel.addWidget(activityDisplay);
+
     setTimeout(() => {
       const pollTab = new PollList(user, awarenessProvider, roles);
+      pollTab.id = 'jp-polls';
       pollTab.title.label = trans.__('Polls');
       chatPanel.addWidget(pollTab);
     }, 1000);

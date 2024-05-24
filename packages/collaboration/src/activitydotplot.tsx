@@ -1,12 +1,22 @@
 import { Notebook, NotebookPanel } from '@jupyterlab/notebook';
+import { JupyterFrontEnd } from '@jupyterlab/application';
 
 import * as React from 'react';
 import Plot from 'react-plotly.js';
 
 import { GraphProps } from './activitydisplay';
 import { SimpleUser } from './cellTracker';
+import { SidePanel } from '@jupyterlab/ui-components';
+import { Chatbox } from './chatbox';
 
-export const ActivityDotPlot: React.FC<GraphProps> = ({tracker}) => {
+interface DotPlotProps extends GraphProps {
+
+    app: JupyterFrontEnd;
+    chatPanel: SidePanel
+
+}
+
+export const ActivityDotPlot: React.FC<DotPlotProps> = ({tracker, app, chatPanel}) => {
 
     const [state, setState] = React.useState<SimpleUser[][]>([]);
 
@@ -102,6 +112,25 @@ export const ActivityDotPlot: React.FC<GraphProps> = ({tracker}) => {
         }
     };
 
-    return <Plot className='jp-graph' data={data} layout={layout}/>
+    const handleDotClick = (data: any) => {
+
+        app.shell.activateById('jp-chat-panel');
+
+        const chatbox = chatPanel.widgets.find(widget => widget.id === 'jp-chatbox') as Chatbox | null;
+
+        if (chatbox) {
+
+            chatbox.show();
+            chatbox.focusOnWritingField();
+
+        }
+
+        const polls = chatPanel.widgets.find(widget => widget.id === 'jp-polls');
+
+        if (polls) polls.hide();
+
+    }
+
+    return <Plot className='jp-graph' data={data} layout={layout} onClick={handleDotClick}/>
 
 }
